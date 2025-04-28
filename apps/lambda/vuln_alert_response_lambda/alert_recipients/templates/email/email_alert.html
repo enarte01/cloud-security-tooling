@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <title>{{record['email_subject']}}
+      </title>
+      <style>
+         table,
+         th,
+         td {
+           padding: 5px;
+           border: 1px solid black;
+           border-collapse: collapse;
+         }
+      </style>
+   </head>
+   <body>
+    <p> Dear {{record['recipient_name']}},
+    </p>
+    <p>
+    Amazon Inspector Scan found critical vulnerabilities in your ECR image. see details below:
+    </p>
+        <table>
+            <tr>
+                <th style="background-color:darkgray">
+                   Account Number         
+                </th>
+                <th style="background-color:darkgray">
+                   ECR Repository Name
+                </th>
+                <th style="background-color:darkgray">
+                    ECR Image ID
+                </th>
+                <th style="background-color:darkgray">
+                    ECR Image Tag
+                </th>
+                <th style="background-color:darkgray">
+                    Region
+                </th>
+                <th style="background-color:darkgray">
+                    Critical
+                </th>
+                <th style="background-color:darkgray">
+                    High
+                </th>
+                <th style="background-color:darkgray">
+                    Medium
+                </th>
+    
+             </tr>
+             <tr>
+                <td>{{record['account-id']}}
+                </td>
+                <td>{{record['finding-data']['resource-id']['repository']}}
+                </td>
+                <td>{{record['finding-data']['resource-id']['image-id']}}
+                </td>
+                <td>{{record['finding-data']['resource-id']['image-tags'][0]}}
+                </td>
+                <td>{{record['finding-data']['region']}}
+                </td>
+                <td>{{record['finding-data']['finding-counts']['critical']}}
+                </td>
+                <td>{{record['finding-data']['finding-counts']['high']}}
+                </td>
+                <td>{{record['finding-data']['finding-counts']['medium']}}
+                </td>
+             </tr>
+
+        </table>
+    <h2>
+        Remediation
+    </h2>
+    <p>
+        The following remediation steps were taken to remediate the affected Image:
+    </p>
+    <table>
+        <tr>
+            <th style="background-color:darkgray">
+               Remediation Step         
+            </th>
+            <th style="background-color:darkgray">
+               Status
+            </th>
+        </tr>
+        {% for value in record['remediation-actions'] %}
+        <tr>
+           <td>{{fvalue['action']}}
+           </td>
+           <td>{{value['status']}}
+           </td>
+           {% endfor %}
+
+    </table>
+   </body>
+</html>

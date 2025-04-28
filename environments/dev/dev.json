@@ -1,0 +1,13 @@
+{
+    "acc_id": "",
+    "region": "",
+    "tags": {},
+    "resources": {
+        "iam_role": ""
+    },
+    "backend": {
+        "s3_bucket": "",
+        "dynamo_db": "",
+        "key": ""
+    }
+}

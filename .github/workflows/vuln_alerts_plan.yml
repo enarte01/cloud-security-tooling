@@ -1,0 +1,224 @@
+#TODO secrets scan, codeql
+name: "vuln alerts tf plan"
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+    paths:
+      - "terraform/apps/lambda/**"
+      - "apps/lambda/**"
+      - ".github/workflows/vuln_alerts_plan.yaml"
+      - ".github/workflows/actions/tf_run.yaml"
+      - ".github/workflows/actions/code_scan.yaml"
+      - "environments/**"
+
+concurrency:
+  group: vuln-alerts
+
+env:
+  TARGET_DIR: terraform/apps/lambda
+  APP_DIR: apps/lambda
+  TF_VERSION: 1.6.6
+
+permissions:
+  id-token: write
+  contents: read
+  checks: write
+
+jobs:
+  prerequisites:
+    name: "Prerequisites"
+    runs-on: ubuntu-latest
+    outputs:
+      changed_apps:  ${{ steps.changed_apps.outputs.changed_apps }}
+      changed_tf:  ${{ steps.changed_tf.outputs.changed_tf }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: file changes fuction
+        id: file_changes_function
+        run: |
+          file_changes(){
+            changed_files=()
+            for file_changed in $1 ); do
+              echo $file_changed
+              file=$(echo $file_changed | cut -d $2 -f $3)
+              echo "${changed_files[@]}" | grep -w "$file" || {
+                changed_files+=($file)
+              }
+            done
+            changed_files=$(IFS=, ; echo "${changed_files[*]}")
+            return changed_files
+            }
+      - uses: dorny/paths-filter@v3
+        id: changed_app_files
+        with:
+          list-files: 'escape'
+          filters: |
+            app_changes:
+              - 'apps/lambda/**'
+      - name: changed appps
+        id: changed_apps
+        run: |
+            file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" ) '/' 3
+            echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
+      
+      - uses: dorny/paths-filter@v3
+        id: changed_tf_files
+        with:
+          list-files: 'escape'
+          filters: |
+            tf_changes:
+              - 'terraform/apps/lambda/**'
+      - name: changed tf files
+        id: changed_tf
+        run: |
+            file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" ) '/' 3
+            echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
+
+ #TODO read precommit it again 
+  pre-commit:
+    name: "Pre-commit"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pre-commit
+        id: pre-commit
+        uses: ./.github/actions/pre_commit
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+  
+  app_tests:
+    name: "Lambda Tests"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12" ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install testing dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black pytest
+
+          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.apps_changed }}"
+          for module_directory in "${APP_MODULES[@]}"; do
+            pushd apps/lambda/${module_directory}
+
+            pwd
+
+            python -m venv venv
+            source venv/bin/activate
+
+            if [[ -f requirements.txt ]]; then
+              pip install -r requirements.txt
+            fi
+
+            if [[ -f test-requirements.txt ]]; then
+              pip install -r test-requirements.txt
+            fi
+
+            deactivate
+
+            popd
+          done
+      #read black, bandit
+      - name: Lint with Black
+        run: |
+          cd app
+          for module_directory in "${APP_MODULES[@]}"; do
+            black ${module_directory}/* --check --diff
+          done
+
+      - name: Test with pytest
+      #change test to unittest
+      #create a test runner instead
+        run: |
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.apps_changed }}"
+          for module_directory in "${APP_MODULES[@]}"; do
+            pushd lambda/audit/${module_directory}
+            found=echo "find -type d -name tests*"
+            if [[-n ${found} ]]; then
+              source ../venv/bin/activate
+              pwd
+
+              python -m unittest discover . --junitxml=reports/report.xml -s
+
+              deactivate
+            fi
+
+            popd
+          done
+
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: success() || failure()
+        with:
+          name: Test Report
+          path: '**/reports/report.xml'
+          reporter: java-junit
+          fail-on-error: 'false'
+          fail-on-empty: 'false'
+          use-actions-summary: 'true'
+  #bandit ? yes
+  code_scan:
+    name: "Code Scan"
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      actions: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Code Scan
+        uses: ./.github/actions/code_scan
+        with:
+          scan-ref: ${{ env.TARGET_DIR }}
+          python_dir: ${{ env.LAMBDA_DIR }}
+          trivy_severity: 'CRITICAL'
+    #upload trivvy scan results
+
+  terraform_plan:
+  #run only if terraform/apps/lambda/** changes, then plan only the folder(s) with changes
+    if: ${{ ${echo "${#prerequisites.outputs.changed_tf[@]}"} > 0 }}
+    name: "Terraform Plan Dev"
+    runs-on: ubuntu-latest
+    concurrency: vuln-alerts
+    strategy:
+      matrix:
+        tf_dir: ${{prerequisites.outputs.changed_tf}}
+    
+    #check if needs code scan - yes
+    needs:
+      - prerequisites
+      - code_scan
+    outputs:
+      terraform_plan_exitcode: ${{ steps.tf_plan.outputs.terraform_plan_exitcode }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      #for each changed folder in terraform/apps/lambda/**, ttf plan
+      - name: Terraform Plan
+        id: tf_plan
+        uses: ./.github/actions/tf_run
+        with:
+          aws_role: ${{ env.AWS_GH_ROLE }}
+          terraform_action: 'plan'
+          terraform_version: ${{ env.TF_VERSION }}
+          tfstate_bucket: ${{ env.TF_BUCKET }}
+          tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
+          tf_working_dir: ${{ matrix.tf_dir }}

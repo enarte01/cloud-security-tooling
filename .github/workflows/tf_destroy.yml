@@ -1,0 +1,39 @@
+name: "Destroy TF resources"
+on:
+  workflow_dispatch:
+
+
+  env:
+  TARGET_DIR: provide_target_to_destroy
+  TF_VERSION: 1.6.6
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+  checks: write
+
+jobs:
+  terraform_destroy:
+    name: "Terraform Destroy"
+    runs-on: ubuntu-latest
+    concurrency: audit-Dev
+    needs:
+    #TODO
+    outputs:
+      terraform_plan_exitcode: ${{ steps.tf_destroy.outputs.terraform_plan_exitcode }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Plan
+        id: tf_destroy
+        uses: .github/workflows/actions/terraform_run
+        with:
+          aws_role: ${{ env.AWS_GH_ROLE }}
+          terraform_action: 'destroy'
+          terraform_version: ${{ env.TF_VERSION }}
+          tfstate_bucket: ${{ env.TF_BUCKET }}
+          tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
+          tf_working_dir: ${{ env.TARGET_DIR }}
+  

@@ -1,0 +1,314 @@
+name: "PR"
+
+on:
+  pull_request:
+    paths:
+      - "terraform/apps/**"
+      - "apps/lambda/**"
+      - ".github/workflows/vuln_alerts_plan.yaml"
+      - ".github/workflows/actions/tf_run.yaml"
+      - ".github/workflows/actions/code_scan.yaml"
+      - "environments/**"
+
+concurrency:
+  group: vuln-alerts
+
+env:
+  TARGET_DIR: terraform/apps/lambda
+  APP_DIR: apps/lambda
+  TF_VERSION: 1.6.6
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+  checks: write
+
+jobs:
+  prerequisites:
+    name: "Prerequisites"
+    runs-on: ubuntu-latest
+    outputs:
+      changed_apps:  ${{ steps.changed_apps.outputs.changed_apps }}
+      changed_tf:  ${{ steps.changed_tf.outputs.changed_tf }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: file changes fuction
+        id: file_changes_function
+        run: |
+          file_changes(){
+            changed_files=()
+            for file_changed in $1 ); do
+              echo $file_changed
+              file=$(echo $file_changed | cut -d $2 -f $3) #TODO
+              echo "${changed_files[@]}" | grep -w "$file" || {
+                changed_files+=($file)
+              }
+            done
+            changed_files=$(IFS=, ; echo "${changed_files[*]}")
+            return changed_files
+            }
+      - uses: dorny/paths-filter@v3
+        id: changed_app_files
+        with:
+          list-files: 'escape'
+          filters: |
+            app_changes:
+              - 'apps/lambda/**'
+      - name: changed appps
+        id: changed_apps
+        run: |
+            file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" ) '/' 3
+            echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
+      
+      - uses: dorny/paths-filter@v3
+        id: changed_tf_files
+        with:
+          list-files: 'escape'
+          filters: |
+            tf_changes:
+              - 'terraform/apps/lambda/**'
+      - name: changed tf files
+        id: changed_tf
+        run: |
+            file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" ) '/' 3
+            echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
+ #read precommit it again 
+  pre-commit:
+    name: "Pre-commit"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pre-commit
+        id: pre-commit
+        uses: ./.github/actions/pre_commit
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+  
+  app_tests:
+    name: "Lambda Tests"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.11", "3.12" ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install testing dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black pytest
+
+          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.apps_changed }}"
+          for module_directory in "${APP_MODULES[@]}"; do
+            pushd apps/lambda/${module_directory}
+
+            pwd
+
+            python -m venv venv
+            source venv/bin/activate
+
+            if [[ -f requirements.txt ]]; then
+              pip install -r requirements.txt
+            fi
+
+            if [[ -f test-requirements.txt ]]; then
+              pip install -r test-requirements.txt
+            fi
+
+            deactivate
+
+            popd
+          done
+      #read black, bandit
+      - name: Lint with Black
+        run: |
+          cd app
+          for module_directory in "${APP_MODULES[@]}"; do
+            black ${module_directory}/* --check --diff
+          done
+
+      - name: Test with pytest
+      #change test to unittest
+      #create a test runner instead
+        run: |
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.apps_changed }}"
+          for module_directory in "${APP_MODULES[@]}"; do
+            pushd lambda/audit/${module_directory}
+            found=echo "find -type d -name tests*"
+            if [[-n ${found} ]]; then
+              source ../venv/bin/activate
+              pwd
+
+              python -m unittest discover . --junitxml=reports/report.xml -s
+
+              deactivate
+            fi
+
+            popd
+          done
+
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: success() || failure()
+        with:
+          name: Test Report
+          path: '**/reports/report.xml'
+          reporter: java-junit
+          fail-on-error: 'false'
+          fail-on-empty: 'false'
+          use-actions-summary: 'true'
+  #TODO for each requirement file, 
+  #check if changed since last commit
+  #create a package and upload to layer
+  lambda_packaging_dev:
+  #TODO
+  #package src code and upload to s3
+  #package dependency libraries and upload to layer
+    name: "Lambda Dev Packaging"
+    runs-on: ubuntu-latest
+    concurrency: audit-Dev
+    needs:
+      - prerequisites
+      - app_tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{ env.AWS_GH_ROLE }}
+          role-session-name: LambdaPackagingJob
+
+      - name: Package Audit Lambda Code
+        id: lambda_packaging
+        run: |
+          export LAMBDA_S3_BUCKET="{{ env.APP_NAME }}-{{ env.PROJECT_NAME }}-s3-bucket-{{ env.ENV }}"
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.apps_changed }}"
+          for module_directory in "${APP_MODULES[@]}"; do
+            module=${module_directory//_/-}
+
+            zip_name="{{ env.APP_NAME }}-{{ env.PROJECT_NAME }}-${module}.zip"
+            echo " ${zip_name} in apps/${module_directory}"
+            if [ ! -d "apps/${module_directory}" ]; then
+              echo "Skipping packaging for ${module_directory} as it does not exist....yet"
+              continue
+            fi
+            pushd apps/${module_directory}
+
+            if [[ -f requirements.txt ]]; then # and if the file changed since last commit
+              if [[ ${{git diff --exit-code requirements.txt }} == 1 ]]; then
+              echo "create lambda layer zip file"
+              pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/python3.12/site-packages
+              mkdir python
+              cp -r lambda_layer/lib python/
+              zip -r ${zip_name} python
+              layerversionarn= ${{jq -r '.LayerVersionArn' {aws lambda publish-layer-version --layer-name ${module}-layer \
+                --zip-file fileb://${zip_name} \
+                --compatible-runtimes python3.11 python3.12 \
+                --compatible-architectures "x86_64" "arm64"}}}
+              echo "The layer arn of ${module} is ${layerversionarn}"
+              #link layer to lambda
+             
+              ${echo "aws lambda update-function-configuration --function-name arn:aws:lambda:${env.REGION}:${env.ACCOUNT_ID}:function:${module} \
+                  --layers $layerversionarn"}
+              fi
+            fi
+            #TODO
+            #package source code
+            #if the app does not use layer then package dependencies with src code
+
+            mkdir dist
+            cp -r ${module_directory}/!(*.md|*.xlsx|*.txt) dist/
+
+            pushd dist
+
+            zip -r ${zip_name} *
+            echo "Uploading zip to ${LAMBDA_S3_BUCKET}"
+            aws s3api put-object --bucket ${LAMBDA_S3_BUCKET} --key $zip_name --body $zip_name
+
+            popd
+            popd
+          done
+  
+  terraform_plan_dev:
+    if: ${{ ${echo "${#prerequisites.outputs.changed_tf[@]}"} > 0 }}
+    name: "Terraform Plan Dev"
+    runs-on: ubuntu-latest
+    concurrency: audit-Dev
+    strategy:
+      matrix:
+        tf_dir: ${{prerequisites.outputs.changed_tf}}
+    needs:
+      - prerequisites
+    outputs:
+      terraform_plan_exitcode: ${{ steps.tf_plan.outputs.terraform_plan_exitcode }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      #remove env action: use app meta data values
+      - name: Terraform Plan
+        id: tf_plan
+        uses: ./.github/terraform_run
+        with:
+          aws_role: ${{ env.AWS_GH_ROLE }}
+          terraform_action: 'plan'
+          terraform_version: ${{ env.TF_VERSION }}
+          tfstate_bucket: ${{ env.TF_BUCKET }}
+          tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
+          tf_working_dir: ${{ matrix.tf_dir }}
+  
+  terraform_apply_dev:
+    name: "Terraform Apply Dev"
+    runs-on: ubuntu-latest
+    concurrency: audit-Dev
+    if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 &&
+       ${echo "${#prerequisites.outputs.changed_tf[@]}"} > 0 }}
+
+    needs:
+      - prerequisites
+      - terraform_plan_dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Apply
+        id: tf_apply
+        uses: ./.github/terraform_run
+        with:
+          aws_role: ${{ env.AWS_GH_ROLE }}
+          terraform_action: 'apply'
+          terraform_version: ${{ env.TF_VERSION }}
+          tfstate_bucket: ${{ env.TF_BUCKET }}
+          tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
+          tf_working_dir: ${{ env.TARGET_DIR }}
+
+
+#          changed_apps=()
+#          for file_changed in $(echo "${{ steps.changes.outputs.app_changes_files }}" ); do
+#            echo $file_changed
+#            app=$(echo $file_changed | cut -d'/' -f3) #TODO
+#            echo "${changed_apps[@]}" | grep -w "$app" || {
+#              changed_apps+=($app)
+#            }
+#          done
+#          changed_apps=$(IFS=, ; echo "${changed_apps[*]}")
+#          echo "changed_apps=${changed_apps}"

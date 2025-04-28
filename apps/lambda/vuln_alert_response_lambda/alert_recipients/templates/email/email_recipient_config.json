@@ -1,0 +1,21 @@
+[
+	{
+		"service": "email",
+		"config": {
+		"email_details": {
+			"email_subject": "ECR Image Alerts",
+			"sender_email": "capricom.it@gmail.com",
+			"receiver_email": [
+				{
+					"name": "eddie",
+					"email": "dkorant@yahoo.com"
+				}
+			],
+			"html_part": "alert_recipients/templates/email/email_alert.html",
+			"txt_part": "alert_recipients/templates/email/email_alert.txt",
+			"attachment_file": "",
+			"email_server": "smtp.gmail.com"
+		}		
+	}
+}
+]

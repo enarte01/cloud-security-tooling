@@ -1,0 +1,18 @@
+{
+    "rules": [
+        {
+            "rulePriority": 1,
+            "description": "Expire images with Alert CRITICAL",
+            "selection": {
+                "tagStatus": "tagged",
+                "tagPatternList": ["test"],
+                "countType": "sinceImagePushed",
+                "countUnit": "days",
+                "countNumber": 60
+            },
+            "action": {
+                "type": "expire"
+            }
+        }
+    ]
+}

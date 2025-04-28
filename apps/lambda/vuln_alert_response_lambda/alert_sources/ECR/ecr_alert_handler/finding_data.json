@@ -1,0 +1,27 @@
+{
+    "resource-type":"",      
+        "account-id":"",
+        "finding-data":
+            {
+                "resource-id": {
+                    "repository": "",
+                    "image-id": "",
+                    "image-tags": []
+                },
+                "region": "",
+                "detail-type": "",
+                "finding-counts": {
+                    "critcal": "",
+                    "high" : "",
+                    "medium": ""
+                }
+            },
+    "remediation-actions": [
+        {
+            "action": "",
+            "status": ""
+        }
+    ],
+    "recipient_name": "",
+    "email_subject": ""
+}

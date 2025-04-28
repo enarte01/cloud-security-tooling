@@ -1,0 +1,68 @@
+{
+  "remediations": [
+    {
+      "delete_image": {
+        "criteria": {
+          "severity_counts": [
+            {
+              "critical": 9
+            },
+            {
+              "high": 2
+            },
+            {
+              "medium": 0
+            }
+          ],
+          "accessed_updated_days": 90,
+          "not_primary_image": true
+        },
+        "description": "delete if the critical count is above 10, access or updated above 90 days, is not primary image"
+      }
+    },
+    {
+      "tag_image": {
+        "criteria": {
+          "severity_counts": [
+            {
+              "critical": 10
+            },
+            {
+              "high": 2
+            },
+            {
+              "medium": 0
+            }
+          ],
+          "accessed_updated_days": 30,
+          "not_primary_image": true,
+          "tags": [
+            {"key1":"value1"},
+            {"key2":"value2"}
+          ]
+        },
+        "description": "tag if there are critical or highs, access or updated above 30 days"
+      }
+    },
+    {
+      "create_lc_policy": {
+        "criteria": {
+          "severity_counts": [
+            {
+              "critical": "10"
+            },
+            {
+              "high": "2"
+            },
+            {
+              "medium": "0"
+            }
+          ],
+          "accessed_updated_days": 60,
+          "not_primary_image": true
+        },
+        "file_path": "path to lifecycle policy file"
+      }
+    }
+  ]
+}
