@@ -3,9 +3,12 @@ on:
   workflow_dispatch:
 
 
-  env:
+env:
   TARGET_DIR: provide_target_to_destroy
   TF_VERSION: 1.6.6
+  AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
+  TF_BUCKET:
+  TF_DYNAMO_DB:
 
 permissions:
   id-token: write
@@ -18,7 +21,6 @@ jobs:
     name: "Terraform Destroy"
     runs-on: ubuntu-latest
     concurrency: audit-Dev
-    needs:
     #TODO
     outputs:
       terraform_plan_exitcode: ${{ steps.tf_destroy.outputs.terraform_plan_exitcode }}

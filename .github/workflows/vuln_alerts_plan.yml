@@ -2,17 +2,17 @@
 name: "vuln alerts tf plan"
 
 on:
-  push:
-    branches-ignore:
-      - "main"
-    paths:
-      - "terraform/apps/lambda/**"
-      - "apps/lambda/**"
-      - ".github/workflows/vuln_alerts_plan.yaml"
-      - ".github/workflows/actions/tf_run.yaml"
-      - ".github/workflows/actions/code_scan.yaml"
-      - "environments/**"
-
+  #push:
+  #  branches-ignore:
+  #    - "main"
+  #  paths:
+  #    - "terraform/apps/lambda/**"
+  #    - "apps/lambda/**"
+  #    - ".github/workflows/vuln_alerts_plan.yaml"
+  #    - ".github/workflows/actions/tf_run.yaml"
+  #    - ".github/workflows/actions/code_scan.yaml"
+  #    - "environments/**"
+  workflow_dispatch:
 concurrency:
   group: vuln-alerts
 
@@ -20,6 +20,9 @@ env:
   TARGET_DIR: terraform/apps/lambda
   APP_DIR: apps/lambda
   TF_VERSION: 1.6.6
+  AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
+  TF_BUCKET:
+  TF_DYNAMO_DB:
 
 permissions:
   id-token: write
@@ -33,6 +36,8 @@ jobs:
     outputs:
       changed_apps:  ${{ steps.changed_apps.outputs.changed_apps }}
       changed_tf:  ${{ steps.changed_tf.outputs.changed_tf }}
+      changed_apps_count:  ${{ steps.changed_apps.outputs.changed_apps_count }}
+      changed_tf_count:  ${{ steps.changed_tf.outputs.changed_tf_count }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,6 +69,7 @@ jobs:
         run: |
             file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" ) '/' 3
             echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
+            echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
         id: changed_tf_files
@@ -77,6 +83,7 @@ jobs:
         run: |
             file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" ) '/' 3
             echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
+            echo "changed_tf_count=${{ steps.changed_tf_files.outputs.tf_changes_count }}" >> "$GITHUB_OUTPUT"
 
  #TODO read precommit it again 
   pre-commit:
@@ -98,6 +105,8 @@ jobs:
     strategy:
       matrix:
         python-version: [ "3.10", "3.11", "3.12" ]
+    needs: 
+      - prerequisites
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -112,7 +121,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install black pytest
 
-          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.apps_changed }}"
+          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
 
@@ -145,7 +154,7 @@ jobs:
       #change test to unittest
       #create a test runner instead
         run: |
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.apps_changed }}"
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps}}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd lambda/audit/${module_directory}
             found=echo "find -type d -name tests*"
@@ -194,13 +203,13 @@ jobs:
 
   terraform_plan:
   #run only if terraform/apps/lambda/** changes, then plan only the folder(s) with changes
-    if: ${{ ${echo "${#prerequisites.outputs.changed_tf[@]}"} > 0 }}
+    if: ${{ needs.prerequisites.outputs.changed_tf > 0 }}
     name: "Terraform Plan Dev"
     runs-on: ubuntu-latest
     concurrency: vuln-alerts
     strategy:
       matrix:
-        tf_dir: ${{prerequisites.outputs.changed_tf}}
+        tf_dir: ${{needs.prerequisites.outputs.changed_tf}}
     
     #check if needs code scan - yes
     needs:

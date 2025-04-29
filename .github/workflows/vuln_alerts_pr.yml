@@ -1,15 +1,15 @@
 name: "PR"
 
 on:
-  pull_request:
-    paths:
-      - "terraform/apps/**"
-      - "apps/lambda/**"
-      - ".github/workflows/vuln_alerts_plan.yaml"
-      - ".github/workflows/actions/tf_run.yaml"
-      - ".github/workflows/actions/code_scan.yaml"
-      - "environments/**"
-
+  #pull_request:
+  #  paths:
+  #    - "terraform/apps/**"
+  #    - "apps/lambda/**"
+  #    - ".github/workflows/vuln_alerts_plan.yaml"
+  #    - ".github/workflows/actions/tf_run.yaml"
+  #    - ".github/workflows/actions/code_scan.yaml"
+  #    - "environments/**"
+  workflow_dispatch:
 concurrency:
   group: vuln-alerts
 
@@ -17,6 +17,9 @@ env:
   TARGET_DIR: terraform/apps/lambda
   APP_DIR: apps/lambda
   TF_VERSION: 1.6.6
+  AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
+  TF_BUCKET:
+  TF_DYNAMO_DB:
 
 permissions:
   id-token: write
@@ -31,6 +34,8 @@ jobs:
     outputs:
       changed_apps:  ${{ steps.changed_apps.outputs.changed_apps }}
       changed_tf:  ${{ steps.changed_tf.outputs.changed_tf }}
+      changed_apps_count:  ${{ steps.changed_apps.outputs.changed_apps_count }}
+      changed_tf_count:  ${{ steps.changed_tf.outputs.changed_tf_count }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,7 +45,7 @@ jobs:
         run: |
           file_changes(){
             changed_files=()
-            for file_changed in $1 ); do
+            for (file_changed in $1 ); do
               echo $file_changed
               file=$(echo $file_changed | cut -d $2 -f $3) #TODO
               echo "${changed_files[@]}" | grep -w "$file" || {
@@ -62,6 +67,7 @@ jobs:
         run: |
             file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" ) '/' 3
             echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
+            echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
         id: changed_tf_files
@@ -75,6 +81,7 @@ jobs:
         run: |
             file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" ) '/' 3
             echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
+            echo "changed_tf_count=${{ steps.changed_tf_files.outputs.tf_changes_count }}" >> "$GITHUB_OUTPUT"
  #read precommit it again 
   pre-commit:
     name: "Pre-commit"
@@ -95,6 +102,8 @@ jobs:
     strategy:
       matrix:
         python-version: [ "3.11", "3.12" ]
+    needs:
+      - prerequisites
 
     steps:
       - name: Checkout
@@ -110,7 +119,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install black pytest
 
-          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.apps_changed }}"
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
 
@@ -143,7 +152,7 @@ jobs:
       #change test to unittest
       #create a test runner instead
         run: |
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.apps_changed }}"
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd lambda/audit/${module_directory}
             found=echo "find -type d -name tests*"
@@ -202,7 +211,7 @@ jobs:
         id: lambda_packaging
         run: |
           export LAMBDA_S3_BUCKET="{{ env.APP_NAME }}-{{ env.PROJECT_NAME }}-s3-bucket-{{ env.ENV }}"
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.apps_changed }}"
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
           for module_directory in "${APP_MODULES[@]}"; do
             module=${module_directory//_/-}
 
@@ -215,16 +224,16 @@ jobs:
             pushd apps/${module_directory}
 
             if [[ -f requirements.txt ]]; then # and if the file changed since last commit
-              if [[ ${{git diff --exit-code requirements.txt }} == 1 ]]; then
+              if [[ ${ echo "git diff --exit-code requirements.txt" } == 1 ]]; then
               echo "create lambda layer zip file"
               pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/python3.12/site-packages
               mkdir python
               cp -r lambda_layer/lib python/
               zip -r ${zip_name} python
-              layerversionarn= ${{jq -r '.LayerVersionArn' {aws lambda publish-layer-version --layer-name ${module}-layer \
+              layerversionarn= ${jq -r '.LayerVersionArn' {aws lambda publish-layer-version --layer-name ${module}-layer \
                 --zip-file fileb://${zip_name} \
                 --compatible-runtimes python3.11 python3.12 \
-                --compatible-architectures "x86_64" "arm64"}}}
+                --compatible-architectures "x86_64" "arm64"}}
               echo "The layer arn of ${module} is ${layerversionarn}"
               #link layer to lambda
              
@@ -250,13 +259,13 @@ jobs:
           done
   
   terraform_plan_dev:
-    if: ${{ ${echo "${#prerequisites.outputs.changed_tf[@]}"} > 0 }}
+    if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform Plan Dev"
     runs-on: ubuntu-latest
     concurrency: audit-Dev
     strategy:
       matrix:
-        tf_dir: ${{prerequisites.outputs.changed_tf}}
+        tf_dir: ${{needs.prerequisites.outputs.changed_tf}}
     needs:
       - prerequisites
     outputs:
@@ -280,8 +289,7 @@ jobs:
     name: "Terraform Apply Dev"
     runs-on: ubuntu-latest
     concurrency: audit-Dev
-    if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 &&
-       ${echo "${#prerequisites.outputs.changed_tf[@]}"} > 0 }}
+    if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
 
     needs:
       - prerequisites
