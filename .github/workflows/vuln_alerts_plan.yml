@@ -68,9 +68,16 @@ jobs:
       - name: changed appps
         id: changed_apps
         run: |
-            echo "$file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" '/' 3)"
-            echo "print output $?"
-            echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
+            changed_files=()
+            for file_changed in $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}"); do
+              echo $file_changed
+              file=$(echo "$file_changed" | cut -d '/' -f 3)
+              echo "${changed_files[@]}" | grep -w "$file" || {
+                changed_files+=($file)
+              }
+            done
+            changed_files=$(IFS=, ; echo "${changed_files[*]}")
+            echo "changed_apps=$changed_files" >> "$GITHUB_OUTPUT"
             echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
