@@ -79,7 +79,7 @@ jobs:
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
             echo "The changed files are ${changed_files}"
             echo "changed_apps=$changed_files" >> "$GITHUB_OUTPUT"
-            echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
+            echo "changed_apps_count=${#changed_apps[@]}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
         id: changed_tf_files
