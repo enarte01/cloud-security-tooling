@@ -70,6 +70,7 @@ jobs:
         id: changed_apps
         run: |
             echo "$file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" '/' 3)"
+            echo "print output $?"
             echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
             echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
@@ -85,6 +86,7 @@ jobs:
         run: |
             file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" '/' 3)
             echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
+            echo "print output $?"
             echo "changed_tf_count=${{ steps.changed_tf_files.outputs.tf_changes_count }}" >> "$GITHUB_OUTPUT"
 
  #TODO read precommit it again 
@@ -97,7 +99,7 @@ jobs:
 
       - name: Pre-commit
         id: pre-commit
-        uses: .github/actions/pre_commit
+        uses: ./.github/actions/pre_commit
         with:
           terraform_version: ${{ env.TF_VERSION }}
   
@@ -196,7 +198,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Code Scan
-        uses: .github/actions/code_scan
+        uses: ./.github/actions/code_scan
         with:
           scan-ref: ${{ env.TARGET_DIR }}
           python_dir: ${{ env.APP_DIR }}
