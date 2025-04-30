@@ -79,7 +79,8 @@ jobs:
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
             echo "The changed files are ${changed_files}"
             echo "changed_apps=$changed_files" >> "$GITHUB_OUTPUT"
-            echo "changed_apps_count=${#changed_apps[@]}" >> "$GITHUB_OUTPUT"
+            echo "${#changed_files[@]}"
+            echo "changed_apps_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
         id: changed_tf_files
@@ -102,8 +103,8 @@ jobs:
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
             echo "The changed files are ${changed_files}"
             echo "changed_tf=$changed_files" >> "$GITHUB_OUTPUT"
-            echo "${#changed_apps[@]}"
-            echo "changed_tf_count=${#changed_apps[@]}" >> "$GITHUB_OUTPUT"
+            echo "${#changed_files[@]}"
+            echo "changed_tf_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
 
  #TODO read precommit it again 
   pre-commit:
