@@ -194,7 +194,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Code Scan
-        uses: ./.github/actions/code_scan
+        uses: .github/actions/code_scan
         with:
           scan-ref: ${{ env.TARGET_DIR }}
           python_dir: ${{ env.APP_DIR }}
