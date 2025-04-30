@@ -91,10 +91,19 @@ jobs:
       - name: changed tf files
         id: changed_tf
         run: |
-            file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" '/' 3)
-            echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
-            echo "print output $?"
-            echo "changed_tf_count=${{ steps.changed_tf_files.outputs.tf_changes_count }}" >> "$GITHUB_OUTPUT"
+            changed_files=()
+            for file_changed in $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}"); do
+              echo $file_changed
+              file=$(echo "$file_changed" | cut -d '/' -f 3)
+              echo "${changed_files[@]}" | grep -w "$file" || {
+                changed_files+=($file)
+              }
+            done
+            changed_files=$(IFS=, ; echo "${changed_files[*]}")
+            echo "The changed files are ${changed_files}"
+            echo "changed_tf=$changed_files" >> "$GITHUB_OUTPUT"
+            echo "${#changed_apps[@]}"
+            echo "changed_tf_count=${#changed_apps[@]}" >> "$GITHUB_OUTPUT"
 
  #TODO read precommit it again 
   pre-commit:
