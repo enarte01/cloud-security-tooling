@@ -67,7 +67,7 @@ jobs:
       - name: changed appps
         id: changed_apps
         run: |
-            file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" ) '/' 3
+            echo "$file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" '/' 3)"
             echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
             echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
@@ -81,7 +81,7 @@ jobs:
       - name: changed tf files
         id: changed_tf
         run: |
-            file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" ) '/' 3
+            file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}" '/' 3)
             echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
             echo "changed_tf_count=${{ steps.changed_tf_files.outputs.tf_changes_count }}" >> "$GITHUB_OUTPUT"
 

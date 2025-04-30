@@ -65,7 +65,7 @@ jobs:
       - name: changed appps
         id: changed_apps
         run: |
-            $file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" ) '/' 3
+            $file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}"  '/' 3)
             echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
             echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
