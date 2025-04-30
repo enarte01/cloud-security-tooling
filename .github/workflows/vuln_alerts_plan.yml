@@ -57,6 +57,7 @@ jobs:
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
             return changed_files
             }
+          file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" '/' 3)"
       - uses: dorny/paths-filter@v3
         id: changed_app_files
         with:
