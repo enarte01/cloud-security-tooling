@@ -116,7 +116,7 @@ jobs:
 
       - name: Pre-commit
         id: pre-commit
-        uses: ./.github/actions/pre_commit.yml
+        uses: ./.github/workflows/pre_commit
         with:
           terraform_version: ${{ env.TF_VERSION }}
   
@@ -215,7 +215,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Code Scan
-        uses: ./.github/actions/code_scan.yml
+        uses: ./.github/workflows/code_scan
         with:
           scan-ref: ${{ env.TARGET_DIR }}
           python_dir: ${{ env.APP_DIR }}
