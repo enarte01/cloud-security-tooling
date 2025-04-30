@@ -43,8 +43,8 @@ jobs:
         run: |
           file_changes(){
             changed_files=()
-            for (file_changed in $1 ); do
-              echo $file_changed
+            for file_changed in $1 ; do
+              echo "$file_changed"
               file=$(echo $file_changed | cut -d $2 -f $3) #TODO
               echo "${changed_files[@]}" | grep -w "$file" || {
                 changed_files+=($file)
@@ -143,7 +143,7 @@ jobs:
         run: |
           cd app
           for module_directory in "${APP_MODULES[@]}"; do
-            black ${module_directory}/* --check --diff
+            black apps/lambda/${module_directory}/* --check --diff
           done
 
       - name: Test with pytest
@@ -152,7 +152,7 @@ jobs:
         run: |
           IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
           for module_directory in "${APP_MODULES[@]}"; do
-            pushd lambda/audit/${module_directory}
+            pushd apps/lambda/${module_directory}
             found=echo "find -type d -name tests*"
             if [[-n ${found} ]]; then
               source ../venv/bin/activate
@@ -214,11 +214,11 @@ jobs:
 
             zip_name="{{ env.APP_NAME }}-{{ env.PROJECT_NAME }}-${module}.zip"
             echo " ${zip_name} in apps/${module_directory}"
-            if [ ! -d "apps/${module_directory}" ]; then
-              echo "Skipping packaging for ${module_directory} as it does not exist....yet"
+            if [ ! -d "apps/lambda/${module_directory}" ]; then
+              echo "Skipping packaging for ${module_directory}"
               continue
             fi
-            pushd apps/${module_directory}
+            pushd apps/lambda//${module_directory}
 
             if [[ -f requirements.txt ]]; then # and if the file changed since last commit
               if [[ ${echo "git diff --exit-code requirements.txt" } == 1 ]]; then
@@ -232,7 +232,6 @@ jobs:
                 --compatible-runtimes python3.11 python3.12 \
                 --compatible-architectures "x86_64" "arm64"}}
               echo "The layer arn of ${module} is ${layerversionarn}"
-              #link layer to lambda
              
               ${echo "aws lambda update-function-configuration --function-name arn:aws:lambda:${env.REGION}:${env.ACCOUNT_ID}:function:${module} \
                   --layers $layerversionarn"}
@@ -243,7 +242,7 @@ jobs:
             #if the app does not use layer then package dependencies with src code
 
             mkdir dist
-            cp -r ${module_directory}/!(*.md|*.xlsx|*.txt) dist/
+            cp -r ./!(*.md|*.xlsx|*.txt) dist/
 
             pushd dist
 
