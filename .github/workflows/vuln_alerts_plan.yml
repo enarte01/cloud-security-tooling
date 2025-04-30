@@ -58,6 +58,7 @@ jobs:
             return changed_files
             }
           file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}" '/' 3)"
+          export -f file_changes
       - uses: dorny/paths-filter@v3
         id: changed_app_files
         with:
@@ -96,7 +97,7 @@ jobs:
 
       - name: Pre-commit
         id: pre-commit
-        uses: ./.github/actions/pre_commit
+        uses: .github/actions/pre_commit
         with:
           terraform_version: ${{ env.TF_VERSION }}
   

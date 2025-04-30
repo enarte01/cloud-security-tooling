@@ -46,7 +46,7 @@ jobs:
           file_changes(){
             changed_files=()
             for file_changed in $1; do
-              echo $file_changed
+              echo "the changed file is $file_changed"
               file=$(echo "$file_changed" | cut -d $2 -f $3)
               echo "${changed_files[@]}" | grep -w "$file" || {
                 changed_files+=($file)
@@ -66,6 +66,7 @@ jobs:
         id: changed_apps
         run: |
             $file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}"  '/' 3)
+            echo "print output $?"
             echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
             echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
@@ -92,7 +93,7 @@ jobs:
 
       - name: Pre-commit
         id: pre-commit
-        uses: ./.github/actions/pre_commit
+        uses: .github/actions/pre_commit
         with:
           terraform_version: ${{ env.TF_VERSION }}
   
