@@ -56,7 +56,7 @@ resource "aws_lambda_function" "lambda" {
   }
   //kms_key_arn = var.kms_key_arn if env variables is set
   //logging_config
-  layers = var.layers != [] && var.create_layer == false ? var.layers : [module.layer[*].layer_version_arn]
+  layers = var.layers != [] && var.create_layer == false ? var.layers : [module.layer[0].layer_version_arn]
   //vpc_config 
   //dead_letter_config TODO
   //environment TODO
