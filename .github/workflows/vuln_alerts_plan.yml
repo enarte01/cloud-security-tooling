@@ -227,6 +227,7 @@ jobs:
           for module in "${TF_MODULES[@]}"; do
             module=${module//_/-}
             tf_files+=($module)
+          done  
           echo "[${tf_files[@]}]"
           echo "matrix={'tf_dir':['${tf_files[@]}']}" >> "$GITHUB_OUTPUT"
 
