@@ -42,22 +42,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: file changes fuction
-        id: file_changes_function
-        run: |
-          file_changes(){
-            changed_files=()
-            for file_changed in $1; do
-              echo $file_changed
-              file=$(echo "$file_changed" | cut -d $2 -f $3)
-              echo "${changed_files[@]}" | grep -w "$file" || {
-                changed_files+=($file)
-              }
-            done
-            changed_files=$(IFS=, ; echo "${changed_files[*]}")
-            return changed_files
-            }
-          export -f file_changes
       - uses: dorny/paths-filter@v3
         id: changed_app_files
         with:
@@ -152,6 +136,7 @@ jobs:
             source venv/bin/activate
 
             if [[ -f requirements.txt ]]; then
+              pip install --upgrade pip
               pip install -r requirements.txt
             fi
 
