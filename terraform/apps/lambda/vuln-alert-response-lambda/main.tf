@@ -3,7 +3,7 @@
 //sns
 
 module "lambda" {
-  source              = "../modiules/aws/lambda"
+  source              = "../../../modiules/aws/lambda"
   function_name       = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-lambda-${local.deployed_tags.env}"
   role_name           = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-lambda-role-${local.deployed_tags.env}"
   handler             = local.handler
@@ -21,7 +21,7 @@ module "lambda" {
 }
 
 module "events_trigger" {
-  source           = "../common-resources/aws/eb_events"
+  source           = "../../../common-resources/aws/eb_events"
   target_id        = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-event-target-${local.deployed_tags.env}"
   event_rule_state = local.event_rule_state
   event_rule_name  = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-event-rule-${local.deployed_tags.env}"

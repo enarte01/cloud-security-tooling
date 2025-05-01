@@ -1,0 +1,3695 @@
+{
+    "format_version": "1.2",
+    "terraform_version": "1.10.5",
+    "variables": {
+        "region": {
+            "value": "eu-west-2"
+        },
+        "tags": {
+            "value": {
+                "env": "test",
+                "project-name": "cpd-portfolio"
+            }
+        }
+    },
+    "planned_values": {
+        "outputs": {
+            "lambda_arn": {
+                "sensitive": false
+            }
+        },
+        "root_module": {
+            "resources": [
+                {
+                    "address": "aws_lambda_permission.trigger_lambda",
+                    "mode": "managed",
+                    "type": "aws_lambda_permission",
+                    "name": "trigger_lambda",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "action": "lambda:InvokeFunction",
+                        "event_source_token": null,
+                        "function_name": "vuln-alert-response-cpd-portfolio-lambda-test",
+                        "function_url_auth_type": null,
+                        "principal": "events.amazonaws.com",
+                        "principal_org_id": null,
+                        "qualifier": null,
+                        "source_account": null,
+                        "statement_id": "AllowExecutionFromEvents"
+                    },
+                    "sensitive_values": {}
+                },
+                {
+                    "address": "data.aws_iam_policy_document.events_policy",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "events_policy",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "override_json": null,
+                        "override_policy_documents": null,
+                        "policy_id": null,
+                        "source_json": null,
+                        "source_policy_documents": null,
+                        "statement": [
+                            {
+                                "actions": [
+                                    "lambda:InvokeFunction"
+                                ],
+                                "condition": [],
+                                "effect": "Allow",
+                                "not_actions": null,
+                                "not_principals": [],
+                                "not_resources": null,
+                                "principals": [],
+                                "resources": [
+                                    null
+                                ],
+                                "sid": null
+                            }
+                        ],
+                        "version": null
+                    },
+                    "sensitive_values": {
+                        "statement": [
+                            {
+                                "actions": [
+                                    false
+                                ],
+                                "condition": [],
+                                "not_principals": [],
+                                "principals": [],
+                                "resources": [
+                                    false
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "address": "data.aws_iam_policy_document.lambda_policy",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "lambda_policy",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "override_json": null,
+                        "override_policy_documents": null,
+                        "policy_id": null,
+                        "source_json": null,
+                        "source_policy_documents": null,
+                        "statement": [
+                            {
+                                "actions": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                ],
+                                "condition": [],
+                                "effect": "Allow",
+                                "not_actions": null,
+                                "not_principals": [],
+                                "not_resources": null,
+                                "principals": [],
+                                "resources": [
+                                    "arn:aws:logs:*:*:*"
+                                ],
+                                "sid": null
+                            },
+                            {
+                                "actions": [
+                                    "s3:GetObject",
+                                    "s3:ListBucket"
+                                ],
+                                "condition": [],
+                                "effect": null,
+                                "not_actions": null,
+                                "not_principals": [],
+                                "not_resources": null,
+                                "principals": [],
+                                "resources": [
+                                    null,
+                                    null
+                                ],
+                                "sid": null
+                            },
+                            {
+                                "actions": [
+                                    "ecr:*"
+                                ],
+                                "condition": [],
+                                "effect": null,
+                                "not_actions": null,
+                                "not_principals": [],
+                                "not_resources": null,
+                                "principals": [],
+                                "resources": [
+                                    "*"
+                                ],
+                                "sid": null
+                            }
+                        ],
+                        "version": null
+                    },
+                    "sensitive_values": {
+                        "statement": [
+                            {
+                                "actions": [
+                                    false,
+                                    false,
+                                    false
+                                ],
+                                "condition": [],
+                                "not_principals": [],
+                                "principals": [],
+                                "resources": [
+                                    false
+                                ]
+                            },
+                            {
+                                "actions": [
+                                    false,
+                                    false
+                                ],
+                                "condition": [],
+                                "not_principals": [],
+                                "principals": [],
+                                "resources": [
+                                    false,
+                                    false
+                                ]
+                            },
+                            {
+                                "actions": [
+                                    false
+                                ],
+                                "condition": [],
+                                "not_principals": [],
+                                "principals": [],
+                                "resources": [
+                                    false
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "address": "data.aws_iam_policy_document.s3_bucket_policy",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "s3_bucket_policy",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "override_json": null,
+                        "override_policy_documents": null,
+                        "policy_id": null,
+                        "source_json": null,
+                        "source_policy_documents": null,
+                        "statement": [
+                            {
+                                "actions": [
+                                    "S3:PutObjectAcl",
+                                    "s3:GetObject",
+                                    "s3:GetObjectVersion",
+                                    "s3:ListBucket",
+                                    "s3:PutObject"
+                                ],
+                                "condition": [],
+                                "effect": null,
+                                "not_actions": null,
+                                "not_principals": [],
+                                "not_resources": null,
+                                "principals": [],
+                                "resources": [
+                                    null,
+                                    null
+                                ],
+                                "sid": null
+                            }
+                        ],
+                        "version": null
+                    },
+                    "sensitive_values": {
+                        "statement": [
+                            {
+                                "actions": [
+                                    false,
+                                    false,
+                                    false,
+                                    false,
+                                    false
+                                ],
+                                "condition": [],
+                                "not_principals": [],
+                                "principals": [],
+                                "resources": [
+                                    false,
+                                    false
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "child_modules": [
+                {
+                    "resources": [
+                        {
+                            "address": "module.events_trigger.aws_cloudwatch_event_rule.event_rule",
+                            "mode": "managed",
+                            "type": "aws_cloudwatch_event_rule",
+                            "name": "event_rule",
+                            "provider_name": "registry.terraform.io/hashicorp/aws",
+                            "schema_version": 1,
+                            "values": {
+                                "description": null,
+                                "event_bus_name": "default",
+                                "event_pattern": "{\"detail\":{\"scan-status\":[\"INITIAL_SCAN_COMPLETE\",\"COMPLETE\"]},\"detail-type\":[\"Inspector2 Scan\",\"ECR Image Scan\"],\"source\":[\"aws.inspector2\",\"aws.ecr\"]}",
+                                "force_destroy": false,
+                                "is_enabled": null,
+                                "name": "vuln-alert-response-cpd-portfolio-event-rule-test",
+                                "role_arn": null,
+                                "schedule_expression": null,
+                                "state": "ENABLED",
+                                "tags": null
+                            },
+                            "sensitive_values": {
+                                "tags_all": {}
+                            }
+                        },
+                        {
+                            "address": "module.events_trigger.aws_cloudwatch_event_target.event_target",
+                            "mode": "managed",
+                            "type": "aws_cloudwatch_event_target",
+                            "name": "event_target",
+                            "provider_name": "registry.terraform.io/hashicorp/aws",
+                            "schema_version": 1,
+                            "values": {
+                                "appsync_target": [],
+                                "arn": "",
+                                "batch_target": [],
+                                "dead_letter_config": [],
+                                "ecs_target": [],
+                                "event_bus_name": "default",
+                                "force_destroy": false,
+                                "http_target": [],
+                                "input": null,
+                                "input_path": null,
+                                "input_transformer": [],
+                                "kinesis_target": [],
+                                "redshift_target": [],
+                                "retry_policy": [],
+                                "role_arn": null,
+                                "rule": "vuln-alert-response-cpd-portfolio-event-rule-test",
+                                "run_command_targets": [],
+                                "sagemaker_pipeline_target": [],
+                                "sqs_target": [],
+                                "target_id": "vuln-alert-response-cpd-portfolio-event-target-test"
+                            },
+                            "sensitive_values": {
+                                "appsync_target": [],
+                                "batch_target": [],
+                                "dead_letter_config": [],
+                                "ecs_target": [],
+                                "http_target": [],
+                                "input_transformer": [],
+                                "kinesis_target": [],
+                                "redshift_target": [],
+                                "retry_policy": [],
+                                "run_command_targets": [],
+                                "sagemaker_pipeline_target": [],
+                                "sqs_target": []
+                            }
+                        }
+                    ],
+                    "address": "module.events_trigger"
+                },
+                {
+                    "resources": [
+                        {
+                            "address": "module.lambda.aws_lambda_function.lambda",
+                            "mode": "managed",
+                            "type": "aws_lambda_function",
+                            "name": "lambda",
+                            "provider_name": "registry.terraform.io/hashicorp/aws",
+                            "schema_version": 0,
+                            "values": {
+                                "code_signing_config_arn": null,
+                                "dead_letter_config": [],
+                                "description": null,
+                                "environment": [],
+                                "ephemeral_storage": [
+                                    {
+                                        "size": 4096
+                                    }
+                                ],
+                                "file_system_config": [],
+                                "filename": null,
+                                "function_name": "vuln-alert-response-cpd-portfolio-lambda-test",
+                                "handler": "lambda_handler",
+                                "image_config": [],
+                                "image_uri": null,
+                                "kms_key_arn": null,
+                                "memory_size": 2048,
+                                "package_type": "Zip",
+                                "publish": false,
+                                "replace_security_groups_on_destroy": null,
+                                "replacement_security_group_ids": null,
+                                "reserved_concurrent_executions": -1,
+                                "runtime": "python3.12",
+                                "s3_bucket": "vuln-alert-response-cpd-portfolio-s3-bucket-test",
+                                "s3_key": "",
+                                "s3_object_version": null,
+                                "skip_destroy": false,
+                                "snap_start": [],
+                                "tags": {
+                                    "env": "test",
+                                    "project": "my-project"
+                                },
+                                "tags_all": {
+                                    "env": "test",
+                                    "project": "my-project"
+                                },
+                                "timeout": 5,
+                                "timeouts": null,
+                                "vpc_config": []
+                            },
+                            "sensitive_values": {
+                                "architectures": [],
+                                "dead_letter_config": [],
+                                "environment": [],
+                                "ephemeral_storage": [
+                                    {}
+                                ],
+                                "file_system_config": [],
+                                "image_config": [],
+                                "layers": [],
+                                "logging_config": [],
+                                "snap_start": [],
+                                "tags": {},
+                                "tags_all": {},
+                                "tracing_config": [],
+                                "vpc_config": []
+                            }
+                        }
+                    ],
+                    "address": "module.lambda",
+                    "child_modules": [
+                        {
+                            "resources": [
+                                {
+                                    "address": "module.lambda.module.log_group.aws_cloudwatch_log_group.log_group",
+                                    "mode": "managed",
+                                    "type": "aws_cloudwatch_log_group",
+                                    "name": "log_group",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "kms_key_id": null,
+                                        "name": "aws/lambda/vuln-alert-response-cpd-portfolio-lambda-test",
+                                        "retention_in_days": 7,
+                                        "skip_destroy": false,
+                                        "tags": {
+                                            "env": "test",
+                                            "project": "my-project"
+                                        },
+                                        "tags_all": {
+                                            "env": "test",
+                                            "project": "my-project"
+                                        }
+                                    },
+                                    "sensitive_values": {
+                                        "tags": {},
+                                        "tags_all": {}
+                                    }
+                                }
+                            ],
+                            "address": "module.lambda.module.log_group"
+                        },
+                        {
+                            "resources": [
+                                {
+                                    "address": "module.lambda.module.layer[0].aws_lambda_layer_version.lambda_layer",
+                                    "mode": "managed",
+                                    "type": "aws_lambda_layer_version",
+                                    "name": "lambda_layer",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "compatible_architectures": null,
+                                        "compatible_runtimes": [
+                                            "python3.11",
+                                            "python3.12"
+                                        ],
+                                        "description": null,
+                                        "filename": "kerrjek.zip",
+                                        "layer_name": "vuln-alert-response-cpd-portfolio-layer-test",
+                                        "license_info": null,
+                                        "s3_bucket": null,
+                                        "s3_key": null,
+                                        "s3_object_version": null,
+                                        "skip_destroy": false
+                                    },
+                                    "sensitive_values": {
+                                        "compatible_runtimes": [
+                                            false,
+                                            false
+                                        ]
+                                    }
+                                }
+                            ],
+                            "address": "module.lambda.module.layer[0]"
+                        },
+                        {
+                            "resources": [
+                                {
+                                    "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket.s3_bucket",
+                                    "mode": "managed",
+                                    "type": "aws_s3_bucket",
+                                    "name": "s3_bucket",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "bucket": "vuln-alert-response-cpd-portfolio-lambda-test-bucket",
+                                        "force_destroy": false,
+                                        "tags": {
+                                            "env": "test",
+                                            "project": "my-project"
+                                        },
+                                        "tags_all": {
+                                            "env": "test",
+                                            "project": "my-project"
+                                        },
+                                        "timeouts": null
+                                    },
+                                    "sensitive_values": {
+                                        "cors_rule": [],
+                                        "grant": [],
+                                        "lifecycle_rule": [],
+                                        "logging": [],
+                                        "object_lock_configuration": [],
+                                        "replication_configuration": [],
+                                        "server_side_encryption_configuration": [],
+                                        "tags": {},
+                                        "tags_all": {},
+                                        "versioning": [],
+                                        "website": []
+                                    }
+                                },
+                                {
+                                    "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_acl.bucket_acl[0]",
+                                    "mode": "managed",
+                                    "type": "aws_s3_bucket_acl",
+                                    "name": "bucket_acl",
+                                    "index": 0,
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "acl": "private",
+                                        "expected_bucket_owner": null
+                                    },
+                                    "sensitive_values": {
+                                        "access_control_policy": []
+                                    }
+                                },
+                                {
+                                    "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_lifecycle_configuration.example",
+                                    "mode": "managed",
+                                    "type": "aws_s3_bucket_lifecycle_configuration",
+                                    "name": "example",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 1,
+                                    "values": {
+                                        "rule": [],
+                                        "timeouts": null,
+                                        "transition_default_minimum_object_size": "all_storage_classes_128K"
+                                    },
+                                    "sensitive_values": {
+                                        "rule": []
+                                    }
+                                },
+                                {
+                                    "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_policy.bucket_policy",
+                                    "mode": "managed",
+                                    "type": "aws_s3_bucket_policy",
+                                    "name": "bucket_policy",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "sensitive_values": {}
+                                },
+                                {
+                                    "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_public_access_block.bucket_acl",
+                                    "mode": "managed",
+                                    "type": "aws_s3_bucket_public_access_block",
+                                    "name": "bucket_acl",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "block_public_acls": true,
+                                        "block_public_policy": true,
+                                        "ignore_public_acls": true,
+                                        "restrict_public_buckets": true
+                                    },
+                                    "sensitive_values": {}
+                                },
+                                {
+                                    "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_server_side_encryption_configuration.sse_encryption",
+                                    "mode": "managed",
+                                    "type": "aws_s3_bucket_server_side_encryption_configuration",
+                                    "name": "sse_encryption",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "expected_bucket_owner": null,
+                                        "rule": [
+                                            {
+                                                "apply_server_side_encryption_by_default": [
+                                                    {
+                                                        "sse_algorithm": "aws:kms"
+                                                    }
+                                                ],
+                                                "bucket_key_enabled": null
+                                            }
+                                        ]
+                                    },
+                                    "sensitive_values": {
+                                        "rule": [
+                                            {
+                                                "apply_server_side_encryption_by_default": [
+                                                    {}
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_versioning.versioning_example[0]",
+                                    "mode": "managed",
+                                    "type": "aws_s3_bucket_versioning",
+                                    "name": "versioning_example",
+                                    "index": 0,
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "expected_bucket_owner": null,
+                                        "mfa": null,
+                                        "versioning_configuration": [
+                                            {
+                                                "status": "Disabled"
+                                            }
+                                        ]
+                                    },
+                                    "sensitive_values": {
+                                        "versioning_configuration": [
+                                            {}
+                                        ]
+                                    }
+                                }
+                            ],
+                            "address": "module.lambda.module.s3_bucket[0]"
+                        },
+                        {
+                            "resources": [
+                                {
+                                    "address": "module.lambda.module.execution_role[0].aws_iam_policy.iam_policy[0]",
+                                    "mode": "managed",
+                                    "type": "aws_iam_policy",
+                                    "name": "iam_policy",
+                                    "index": 0,
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "description": null,
+                                        "name": "vuln-alert-response-cpd-portfolio-iam-policy-test",
+                                        "path": "/",
+                                        "tags": null
+                                    },
+                                    "sensitive_values": {
+                                        "tags_all": {}
+                                    }
+                                },
+                                {
+                                    "address": "module.lambda.module.execution_role[0].aws_iam_role.iam_role",
+                                    "mode": "managed",
+                                    "type": "aws_iam_role",
+                                    "name": "iam_role",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+                                        "description": null,
+                                        "force_detach_policies": false,
+                                        "max_session_duration": 3600,
+                                        "name": "vuln-alert-response-cpd-portfolio-lambda-role-test",
+                                        "path": "/",
+                                        "permissions_boundary": null,
+                                        "tags": {
+                                            "env": "test",
+                                            "project": "my-project"
+                                        },
+                                        "tags_all": {
+                                            "env": "test",
+                                            "project": "my-project"
+                                        }
+                                    },
+                                    "sensitive_values": {
+                                        "inline_policy": [],
+                                        "managed_policy_arns": [],
+                                        "tags": {},
+                                        "tags_all": {}
+                                    }
+                                },
+                                {
+                                    "address": "module.lambda.module.execution_role[0].aws_iam_role_policy_attachment.policy_attach",
+                                    "mode": "managed",
+                                    "type": "aws_iam_role_policy_attachment",
+                                    "name": "policy_attach",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "role": "vuln-alert-response-cpd-portfolio-lambda-role-test"
+                                    },
+                                    "sensitive_values": {}
+                                }
+                            ],
+                            "address": "module.lambda.module.execution_role[0]"
+                        },
+                        {
+                            "resources": [
+                                {
+                                    "address": "module.lambda.module.kms_key[0].aws_kms_key.kms_key",
+                                    "mode": "managed",
+                                    "type": "aws_kms_key",
+                                    "name": "kms_key",
+                                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                                    "schema_version": 0,
+                                    "values": {
+                                        "bypass_policy_lockout_safety_check": false,
+                                        "custom_key_store_id": null,
+                                        "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+                                        "deletion_window_in_days": 20,
+                                        "enable_key_rotation": false,
+                                        "is_enabled": true,
+                                        "key_usage": "ENCRYPT_DECRYPT",
+                                        "policy": "{\"Statement\":[{\"Action\":\"kms:*\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::853038574953:user/blaze\"}},{\"Action\":[\"kms:GenerateDataKey\",\"kms:Decrypt\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}",
+                                        "tags": null,
+                                        "timeouts": null,
+                                        "xks_key_id": null
+                                    },
+                                    "sensitive_values": {
+                                        "tags_all": {}
+                                    }
+                                }
+                            ],
+                            "address": "module.lambda.module.kms_key[0]"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "resource_changes": [
+        {
+            "address": "data.aws_iam_policy_document.events_policy",
+            "mode": "data",
+            "type": "aws_iam_policy_document",
+            "name": "events_policy",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "read"
+                ],
+                "before": null,
+                "after": {
+                    "override_json": null,
+                    "override_policy_documents": null,
+                    "policy_id": null,
+                    "source_json": null,
+                    "source_policy_documents": null,
+                    "statement": [
+                        {
+                            "actions": [
+                                "lambda:InvokeFunction"
+                            ],
+                            "condition": [],
+                            "effect": "Allow",
+                            "not_actions": null,
+                            "not_principals": [],
+                            "not_resources": null,
+                            "principals": [],
+                            "resources": [
+                                null
+                            ],
+                            "sid": null
+                        }
+                    ],
+                    "version": null
+                },
+                "after_unknown": {
+                    "id": true,
+                    "json": true,
+                    "minified_json": true,
+                    "statement": [
+                        {
+                            "actions": [
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                true
+                            ]
+                        }
+                    ]
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "statement": [
+                        {
+                            "actions": [
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                false
+                            ]
+                        }
+                    ]
+                }
+            },
+            "action_reason": "read_because_config_unknown"
+        },
+        {
+            "address": "data.aws_iam_policy_document.lambda_policy",
+            "mode": "data",
+            "type": "aws_iam_policy_document",
+            "name": "lambda_policy",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "read"
+                ],
+                "before": null,
+                "after": {
+                    "override_json": null,
+                    "override_policy_documents": null,
+                    "policy_id": null,
+                    "source_json": null,
+                    "source_policy_documents": null,
+                    "statement": [
+                        {
+                            "actions": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "condition": [],
+                            "effect": "Allow",
+                            "not_actions": null,
+                            "not_principals": [],
+                            "not_resources": null,
+                            "principals": [],
+                            "resources": [
+                                "arn:aws:logs:*:*:*"
+                            ],
+                            "sid": null
+                        },
+                        {
+                            "actions": [
+                                "s3:GetObject",
+                                "s3:ListBucket"
+                            ],
+                            "condition": [],
+                            "effect": null,
+                            "not_actions": null,
+                            "not_principals": [],
+                            "not_resources": null,
+                            "principals": [],
+                            "resources": [
+                                null,
+                                null
+                            ],
+                            "sid": null
+                        },
+                        {
+                            "actions": [
+                                "ecr:*"
+                            ],
+                            "condition": [],
+                            "effect": null,
+                            "not_actions": null,
+                            "not_principals": [],
+                            "not_resources": null,
+                            "principals": [],
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": null
+                        }
+                    ],
+                    "version": null
+                },
+                "after_unknown": {
+                    "id": true,
+                    "json": true,
+                    "minified_json": true,
+                    "statement": [
+                        {
+                            "actions": [
+                                false,
+                                false,
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                false
+                            ]
+                        },
+                        {
+                            "actions": [
+                                false,
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                true,
+                                true
+                            ]
+                        },
+                        {
+                            "actions": [
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                false
+                            ]
+                        }
+                    ]
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "statement": [
+                        {
+                            "actions": [
+                                false,
+                                false,
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                false
+                            ]
+                        },
+                        {
+                            "actions": [
+                                false,
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "actions": [
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                false
+                            ]
+                        }
+                    ]
+                }
+            },
+            "action_reason": "read_because_config_unknown"
+        },
+        {
+            "address": "data.aws_iam_policy_document.s3_bucket_policy",
+            "mode": "data",
+            "type": "aws_iam_policy_document",
+            "name": "s3_bucket_policy",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "read"
+                ],
+                "before": null,
+                "after": {
+                    "override_json": null,
+                    "override_policy_documents": null,
+                    "policy_id": null,
+                    "source_json": null,
+                    "source_policy_documents": null,
+                    "statement": [
+                        {
+                            "actions": [
+                                "S3:PutObjectAcl",
+                                "s3:GetObject",
+                                "s3:GetObjectVersion",
+                                "s3:ListBucket",
+                                "s3:PutObject"
+                            ],
+                            "condition": [],
+                            "effect": null,
+                            "not_actions": null,
+                            "not_principals": [],
+                            "not_resources": null,
+                            "principals": [],
+                            "resources": [
+                                null,
+                                null
+                            ],
+                            "sid": null
+                        }
+                    ],
+                    "version": null
+                },
+                "after_unknown": {
+                    "id": true,
+                    "json": true,
+                    "minified_json": true,
+                    "statement": [
+                        {
+                            "actions": [
+                                false,
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                true,
+                                true
+                            ]
+                        }
+                    ]
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "statement": [
+                        {
+                            "actions": [
+                                false,
+                                false,
+                                false,
+                                false,
+                                false
+                            ],
+                            "condition": [],
+                            "not_principals": [],
+                            "principals": [],
+                            "resources": [
+                                false,
+                                false
+                            ]
+                        }
+                    ]
+                }
+            },
+            "action_reason": "read_because_config_unknown"
+        },
+        {
+            "address": "aws_lambda_permission.trigger_lambda",
+            "mode": "managed",
+            "type": "aws_lambda_permission",
+            "name": "trigger_lambda",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "action": "lambda:InvokeFunction",
+                    "event_source_token": null,
+                    "function_name": "vuln-alert-response-cpd-portfolio-lambda-test",
+                    "function_url_auth_type": null,
+                    "principal": "events.amazonaws.com",
+                    "principal_org_id": null,
+                    "qualifier": null,
+                    "source_account": null,
+                    "statement_id": "AllowExecutionFromEvents"
+                },
+                "after_unknown": {
+                    "id": true,
+                    "source_arn": true,
+                    "statement_id_prefix": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {}
+            }
+        },
+        {
+            "address": "module.events_trigger.aws_cloudwatch_event_rule.event_rule",
+            "module_address": "module.events_trigger",
+            "mode": "managed",
+            "type": "aws_cloudwatch_event_rule",
+            "name": "event_rule",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "description": null,
+                    "event_bus_name": "default",
+                    "event_pattern": "{\"detail\":{\"scan-status\":[\"INITIAL_SCAN_COMPLETE\",\"COMPLETE\"]},\"detail-type\":[\"Inspector2 Scan\",\"ECR Image Scan\"],\"source\":[\"aws.inspector2\",\"aws.ecr\"]}",
+                    "force_destroy": false,
+                    "is_enabled": null,
+                    "name": "vuln-alert-response-cpd-portfolio-event-rule-test",
+                    "role_arn": null,
+                    "schedule_expression": null,
+                    "state": "ENABLED",
+                    "tags": null
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "id": true,
+                    "name_prefix": true,
+                    "tags_all": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "tags_all": {}
+                }
+            }
+        },
+        {
+            "address": "module.events_trigger.aws_cloudwatch_event_target.event_target",
+            "module_address": "module.events_trigger",
+            "mode": "managed",
+            "type": "aws_cloudwatch_event_target",
+            "name": "event_target",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "appsync_target": [],
+                    "arn": "",
+                    "batch_target": [],
+                    "dead_letter_config": [],
+                    "ecs_target": [],
+                    "event_bus_name": "default",
+                    "force_destroy": false,
+                    "http_target": [],
+                    "input": null,
+                    "input_path": null,
+                    "input_transformer": [],
+                    "kinesis_target": [],
+                    "redshift_target": [],
+                    "retry_policy": [],
+                    "role_arn": null,
+                    "rule": "vuln-alert-response-cpd-portfolio-event-rule-test",
+                    "run_command_targets": [],
+                    "sagemaker_pipeline_target": [],
+                    "sqs_target": [],
+                    "target_id": "vuln-alert-response-cpd-portfolio-event-target-test"
+                },
+                "after_unknown": {
+                    "appsync_target": [],
+                    "batch_target": [],
+                    "dead_letter_config": [],
+                    "ecs_target": [],
+                    "http_target": [],
+                    "id": true,
+                    "input_transformer": [],
+                    "kinesis_target": [],
+                    "redshift_target": [],
+                    "retry_policy": [],
+                    "run_command_targets": [],
+                    "sagemaker_pipeline_target": [],
+                    "sqs_target": []
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "appsync_target": [],
+                    "batch_target": [],
+                    "dead_letter_config": [],
+                    "ecs_target": [],
+                    "http_target": [],
+                    "input_transformer": [],
+                    "kinesis_target": [],
+                    "redshift_target": [],
+                    "retry_policy": [],
+                    "run_command_targets": [],
+                    "sagemaker_pipeline_target": [],
+                    "sqs_target": []
+                }
+            }
+        },
+        {
+            "address": "module.lambda.aws_lambda_function.lambda",
+            "module_address": "module.lambda",
+            "mode": "managed",
+            "type": "aws_lambda_function",
+            "name": "lambda",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "code_signing_config_arn": null,
+                    "dead_letter_config": [],
+                    "description": null,
+                    "environment": [],
+                    "ephemeral_storage": [
+                        {
+                            "size": 4096
+                        }
+                    ],
+                    "file_system_config": [],
+                    "filename": null,
+                    "function_name": "vuln-alert-response-cpd-portfolio-lambda-test",
+                    "handler": "lambda_handler",
+                    "image_config": [],
+                    "image_uri": null,
+                    "kms_key_arn": null,
+                    "memory_size": 2048,
+                    "package_type": "Zip",
+                    "publish": false,
+                    "replace_security_groups_on_destroy": null,
+                    "replacement_security_group_ids": null,
+                    "reserved_concurrent_executions": -1,
+                    "runtime": "python3.12",
+                    "s3_bucket": "vuln-alert-response-cpd-portfolio-s3-bucket-test",
+                    "s3_key": "",
+                    "s3_object_version": null,
+                    "skip_destroy": false,
+                    "snap_start": [],
+                    "tags": {
+                        "env": "test",
+                        "project": "my-project"
+                    },
+                    "tags_all": {
+                        "env": "test",
+                        "project": "my-project"
+                    },
+                    "timeout": 5,
+                    "timeouts": null,
+                    "vpc_config": []
+                },
+                "after_unknown": {
+                    "architectures": true,
+                    "arn": true,
+                    "code_sha256": true,
+                    "dead_letter_config": [],
+                    "environment": [],
+                    "ephemeral_storage": [
+                        {}
+                    ],
+                    "file_system_config": [],
+                    "id": true,
+                    "image_config": [],
+                    "invoke_arn": true,
+                    "last_modified": true,
+                    "layers": true,
+                    "logging_config": true,
+                    "qualified_arn": true,
+                    "qualified_invoke_arn": true,
+                    "role": true,
+                    "signing_job_arn": true,
+                    "signing_profile_version_arn": true,
+                    "snap_start": [],
+                    "source_code_hash": true,
+                    "source_code_size": true,
+                    "tags": {},
+                    "tags_all": {},
+                    "tracing_config": true,
+                    "version": true,
+                    "vpc_config": []
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "architectures": [],
+                    "dead_letter_config": [],
+                    "environment": [],
+                    "ephemeral_storage": [
+                        {}
+                    ],
+                    "file_system_config": [],
+                    "image_config": [],
+                    "layers": [],
+                    "logging_config": [],
+                    "snap_start": [],
+                    "tags": {},
+                    "tags_all": {},
+                    "tracing_config": [],
+                    "vpc_config": []
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.execution_role[0].aws_iam_policy.iam_policy[0]",
+            "module_address": "module.lambda.module.execution_role[0]",
+            "mode": "managed",
+            "type": "aws_iam_policy",
+            "name": "iam_policy",
+            "index": 0,
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "description": null,
+                    "name": "vuln-alert-response-cpd-portfolio-iam-policy-test",
+                    "path": "/",
+                    "tags": null
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "attachment_count": true,
+                    "id": true,
+                    "name_prefix": true,
+                    "policy": true,
+                    "policy_id": true,
+                    "tags_all": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "tags_all": {}
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.execution_role[0].aws_iam_role.iam_role",
+            "module_address": "module.lambda.module.execution_role[0]",
+            "mode": "managed",
+            "type": "aws_iam_role",
+            "name": "iam_role",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+                    "description": null,
+                    "force_detach_policies": false,
+                    "max_session_duration": 3600,
+                    "name": "vuln-alert-response-cpd-portfolio-lambda-role-test",
+                    "path": "/",
+                    "permissions_boundary": null,
+                    "tags": {
+                        "env": "test",
+                        "project": "my-project"
+                    },
+                    "tags_all": {
+                        "env": "test",
+                        "project": "my-project"
+                    }
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "create_date": true,
+                    "id": true,
+                    "inline_policy": true,
+                    "managed_policy_arns": true,
+                    "name_prefix": true,
+                    "tags": {},
+                    "tags_all": {},
+                    "unique_id": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "inline_policy": [],
+                    "managed_policy_arns": [],
+                    "tags": {},
+                    "tags_all": {}
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.execution_role[0].aws_iam_role_policy_attachment.policy_attach",
+            "module_address": "module.lambda.module.execution_role[0]",
+            "mode": "managed",
+            "type": "aws_iam_role_policy_attachment",
+            "name": "policy_attach",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "role": "vuln-alert-response-cpd-portfolio-lambda-role-test"
+                },
+                "after_unknown": {
+                    "id": true,
+                    "policy_arn": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {}
+            }
+        },
+        {
+            "address": "module.lambda.module.kms_key[0].aws_kms_key.kms_key",
+            "module_address": "module.lambda.module.kms_key[0]",
+            "mode": "managed",
+            "type": "aws_kms_key",
+            "name": "kms_key",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "bypass_policy_lockout_safety_check": false,
+                    "custom_key_store_id": null,
+                    "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+                    "deletion_window_in_days": 20,
+                    "enable_key_rotation": false,
+                    "is_enabled": true,
+                    "key_usage": "ENCRYPT_DECRYPT",
+                    "policy": "{\"Statement\":[{\"Action\":\"kms:*\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::853038574953:user/blaze\"}},{\"Action\":[\"kms:GenerateDataKey\",\"kms:Decrypt\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}",
+                    "tags": null,
+                    "timeouts": null,
+                    "xks_key_id": null
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "description": true,
+                    "id": true,
+                    "key_id": true,
+                    "multi_region": true,
+                    "rotation_period_in_days": true,
+                    "tags_all": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "tags_all": {}
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.layer[0].aws_lambda_layer_version.lambda_layer",
+            "module_address": "module.lambda.module.layer[0]",
+            "mode": "managed",
+            "type": "aws_lambda_layer_version",
+            "name": "lambda_layer",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "compatible_architectures": null,
+                    "compatible_runtimes": [
+                        "python3.11",
+                        "python3.12"
+                    ],
+                    "description": null,
+                    "filename": "kerrjek.zip",
+                    "layer_name": "vuln-alert-response-cpd-portfolio-layer-test",
+                    "license_info": null,
+                    "s3_bucket": null,
+                    "s3_key": null,
+                    "s3_object_version": null,
+                    "skip_destroy": false
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "code_sha256": true,
+                    "compatible_runtimes": [
+                        false,
+                        false
+                    ],
+                    "created_date": true,
+                    "id": true,
+                    "layer_arn": true,
+                    "signing_job_arn": true,
+                    "signing_profile_version_arn": true,
+                    "source_code_hash": true,
+                    "source_code_size": true,
+                    "version": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "compatible_runtimes": [
+                        false,
+                        false
+                    ]
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.log_group.aws_cloudwatch_log_group.log_group",
+            "module_address": "module.lambda.module.log_group",
+            "mode": "managed",
+            "type": "aws_cloudwatch_log_group",
+            "name": "log_group",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "kms_key_id": null,
+                    "name": "aws/lambda/vuln-alert-response-cpd-portfolio-lambda-test",
+                    "retention_in_days": 7,
+                    "skip_destroy": false,
+                    "tags": {
+                        "env": "test",
+                        "project": "my-project"
+                    },
+                    "tags_all": {
+                        "env": "test",
+                        "project": "my-project"
+                    }
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "id": true,
+                    "log_group_class": true,
+                    "name_prefix": true,
+                    "tags": {},
+                    "tags_all": {}
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "tags": {},
+                    "tags_all": {}
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket.s3_bucket",
+            "module_address": "module.lambda.module.s3_bucket[0]",
+            "mode": "managed",
+            "type": "aws_s3_bucket",
+            "name": "s3_bucket",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "bucket": "vuln-alert-response-cpd-portfolio-lambda-test-bucket",
+                    "force_destroy": false,
+                    "tags": {
+                        "env": "test",
+                        "project": "my-project"
+                    },
+                    "tags_all": {
+                        "env": "test",
+                        "project": "my-project"
+                    },
+                    "timeouts": null
+                },
+                "after_unknown": {
+                    "acceleration_status": true,
+                    "acl": true,
+                    "arn": true,
+                    "bucket_domain_name": true,
+                    "bucket_prefix": true,
+                    "bucket_regional_domain_name": true,
+                    "cors_rule": true,
+                    "grant": true,
+                    "hosted_zone_id": true,
+                    "id": true,
+                    "lifecycle_rule": true,
+                    "logging": true,
+                    "object_lock_configuration": true,
+                    "object_lock_enabled": true,
+                    "policy": true,
+                    "region": true,
+                    "replication_configuration": true,
+                    "request_payer": true,
+                    "server_side_encryption_configuration": true,
+                    "tags": {},
+                    "tags_all": {},
+                    "versioning": true,
+                    "website": true,
+                    "website_domain": true,
+                    "website_endpoint": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "cors_rule": [],
+                    "grant": [],
+                    "lifecycle_rule": [],
+                    "logging": [],
+                    "object_lock_configuration": [],
+                    "replication_configuration": [],
+                    "server_side_encryption_configuration": [],
+                    "tags": {},
+                    "tags_all": {},
+                    "versioning": [],
+                    "website": []
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_acl.bucket_acl[0]",
+            "module_address": "module.lambda.module.s3_bucket[0]",
+            "mode": "managed",
+            "type": "aws_s3_bucket_acl",
+            "name": "bucket_acl",
+            "index": 0,
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "acl": "private",
+                    "expected_bucket_owner": null
+                },
+                "after_unknown": {
+                    "access_control_policy": true,
+                    "bucket": true,
+                    "id": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "access_control_policy": []
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_lifecycle_configuration.example",
+            "module_address": "module.lambda.module.s3_bucket[0]",
+            "mode": "managed",
+            "type": "aws_s3_bucket_lifecycle_configuration",
+            "name": "example",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "rule": [],
+                    "timeouts": null,
+                    "transition_default_minimum_object_size": "all_storage_classes_128K"
+                },
+                "after_unknown": {
+                    "bucket": true,
+                    "expected_bucket_owner": true,
+                    "id": true,
+                    "rule": []
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "rule": []
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_policy.bucket_policy",
+            "module_address": "module.lambda.module.s3_bucket[0]",
+            "mode": "managed",
+            "type": "aws_s3_bucket_policy",
+            "name": "bucket_policy",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {},
+                "after_unknown": {
+                    "bucket": true,
+                    "id": true,
+                    "policy": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {}
+            }
+        },
+        {
+            "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_public_access_block.bucket_acl",
+            "module_address": "module.lambda.module.s3_bucket[0]",
+            "mode": "managed",
+            "type": "aws_s3_bucket_public_access_block",
+            "name": "bucket_acl",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "block_public_acls": true,
+                    "block_public_policy": true,
+                    "ignore_public_acls": true,
+                    "restrict_public_buckets": true
+                },
+                "after_unknown": {
+                    "bucket": true,
+                    "id": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {}
+            }
+        },
+        {
+            "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_server_side_encryption_configuration.sse_encryption",
+            "module_address": "module.lambda.module.s3_bucket[0]",
+            "mode": "managed",
+            "type": "aws_s3_bucket_server_side_encryption_configuration",
+            "name": "sse_encryption",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "expected_bucket_owner": null,
+                    "rule": [
+                        {
+                            "apply_server_side_encryption_by_default": [
+                                {
+                                    "sse_algorithm": "aws:kms"
+                                }
+                            ],
+                            "bucket_key_enabled": null
+                        }
+                    ]
+                },
+                "after_unknown": {
+                    "bucket": true,
+                    "id": true,
+                    "rule": [
+                        {
+                            "apply_server_side_encryption_by_default": [
+                                {
+                                    "kms_master_key_id": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "rule": [
+                        {
+                            "apply_server_side_encryption_by_default": [
+                                {}
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "address": "module.lambda.module.s3_bucket[0].aws_s3_bucket_versioning.versioning_example[0]",
+            "module_address": "module.lambda.module.s3_bucket[0]",
+            "mode": "managed",
+            "type": "aws_s3_bucket_versioning",
+            "name": "versioning_example",
+            "index": 0,
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "expected_bucket_owner": null,
+                    "mfa": null,
+                    "versioning_configuration": [
+                        {
+                            "status": "Disabled"
+                        }
+                    ]
+                },
+                "after_unknown": {
+                    "bucket": true,
+                    "id": true,
+                    "versioning_configuration": [
+                        {
+                            "mfa_delete": true
+                        }
+                    ]
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "versioning_configuration": [
+                        {}
+                    ]
+                }
+            }
+        }
+    ],
+    "output_changes": {
+        "lambda_arn": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true,
+            "before_sensitive": false,
+            "after_sensitive": false
+        }
+    },
+    "prior_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.10.5",
+        "values": {
+            "root_module": {
+                "resources": [
+                    {
+                        "address": "data.aws_caller_identity.current",
+                        "mode": "data",
+                        "type": "aws_caller_identity",
+                        "name": "current",
+                        "provider_name": "registry.terraform.io/hashicorp/aws",
+                        "schema_version": 0,
+                        "values": {
+                            "account_id": "853038574953",
+                            "arn": "arn:aws:iam::853038574953:user/blaze",
+                            "id": "853038574953",
+                            "user_id": "AIDA4NHIPVVU27RSYZD2T"
+                        },
+                        "sensitive_values": {}
+                    },
+                    {
+                        "address": "data.aws_iam_policy_document.assume_role",
+                        "mode": "data",
+                        "type": "aws_iam_policy_document",
+                        "name": "assume_role",
+                        "provider_name": "registry.terraform.io/hashicorp/aws",
+                        "schema_version": 0,
+                        "values": {
+                            "id": "2690255455",
+                            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"lambda.amazonaws.com\"\n      }\n    }\n  ]\n}",
+                            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRole\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"}}]}",
+                            "override_json": null,
+                            "override_policy_documents": null,
+                            "policy_id": null,
+                            "source_json": null,
+                            "source_policy_documents": null,
+                            "statement": [
+                                {
+                                    "actions": [
+                                        "sts:AssumeRole"
+                                    ],
+                                    "condition": [],
+                                    "effect": "Allow",
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                "lambda.amazonaws.com"
+                                            ],
+                                            "type": "Service"
+                                        }
+                                    ],
+                                    "resources": [],
+                                    "sid": ""
+                                }
+                            ],
+                            "version": "2012-10-17"
+                        },
+                        "sensitive_values": {
+                            "statement": [
+                                {
+                                    "actions": [
+                                        false
+                                    ],
+                                    "condition": [],
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                false
+                                            ]
+                                        }
+                                    ],
+                                    "resources": []
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "address": "data.aws_iam_policy_document.events_assume_role",
+                        "mode": "data",
+                        "type": "aws_iam_policy_document",
+                        "name": "events_assume_role",
+                        "provider_name": "registry.terraform.io/hashicorp/aws",
+                        "schema_version": 0,
+                        "values": {
+                            "id": "3959961479",
+                            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"events.amazonaws.com\"\n      }\n    }\n  ]\n}",
+                            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRole\",\"Principal\":{\"Service\":\"events.amazonaws.com\"}}]}",
+                            "override_json": null,
+                            "override_policy_documents": null,
+                            "policy_id": null,
+                            "source_json": null,
+                            "source_policy_documents": null,
+                            "statement": [
+                                {
+                                    "actions": [
+                                        "sts:AssumeRole"
+                                    ],
+                                    "condition": [],
+                                    "effect": "Allow",
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                "events.amazonaws.com"
+                                            ],
+                                            "type": "Service"
+                                        }
+                                    ],
+                                    "resources": [],
+                                    "sid": ""
+                                }
+                            ],
+                            "version": "2012-10-17"
+                        },
+                        "sensitive_values": {
+                            "statement": [
+                                {
+                                    "actions": [
+                                        false
+                                    ],
+                                    "condition": [],
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                false
+                                            ]
+                                        }
+                                    ],
+                                    "resources": []
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "address": "data.aws_iam_policy_document.kms_policy",
+                        "mode": "data",
+                        "type": "aws_iam_policy_document",
+                        "name": "kms_policy",
+                        "provider_name": "registry.terraform.io/hashicorp/aws",
+                        "schema_version": 0,
+                        "values": {
+                            "id": "2647514457",
+                            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"kms:*\",\n      \"Principal\": {\n        \"AWS\": \"arn:aws:iam::853038574953:user/blaze\"\n      }\n    },\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"kms:GenerateDataKey\",\n        \"kms:Decrypt\"\n      ],\n      \"Resource\": \"*\",\n      \"Principal\": {\n        \"Service\": \"lambda.amazonaws.com\"\n      }\n    }\n  ]\n}",
+                            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"kms:*\",\"Principal\":{\"AWS\":\"arn:aws:iam::853038574953:user/blaze\"}},{\"Effect\":\"Allow\",\"Action\":[\"kms:GenerateDataKey\",\"kms:Decrypt\"],\"Resource\":\"*\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"}}]}",
+                            "override_json": null,
+                            "override_policy_documents": null,
+                            "policy_id": null,
+                            "source_json": null,
+                            "source_policy_documents": null,
+                            "statement": [
+                                {
+                                    "actions": [
+                                        "kms:*"
+                                    ],
+                                    "condition": [],
+                                    "effect": "Allow",
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                "arn:aws:iam::853038574953:user/blaze"
+                                            ],
+                                            "type": "AWS"
+                                        }
+                                    ],
+                                    "resources": [],
+                                    "sid": ""
+                                },
+                                {
+                                    "actions": [
+                                        "kms:Decrypt",
+                                        "kms:GenerateDataKey"
+                                    ],
+                                    "condition": [],
+                                    "effect": "Allow",
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                "lambda.amazonaws.com"
+                                            ],
+                                            "type": "Service"
+                                        }
+                                    ],
+                                    "resources": [
+                                        "*"
+                                    ],
+                                    "sid": ""
+                                }
+                            ],
+                            "version": "2012-10-17"
+                        },
+                        "sensitive_values": {
+                            "statement": [
+                                {
+                                    "actions": [
+                                        false
+                                    ],
+                                    "condition": [],
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                false
+                                            ]
+                                        }
+                                    ],
+                                    "resources": []
+                                },
+                                {
+                                    "actions": [
+                                        false,
+                                        false
+                                    ],
+                                    "condition": [],
+                                    "not_actions": [],
+                                    "not_principals": [],
+                                    "not_resources": [],
+                                    "principals": [
+                                        {
+                                            "identifiers": [
+                                                false
+                                            ]
+                                        }
+                                    ],
+                                    "resources": [
+                                        false
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "configuration": {
+        "provider_config": {
+            "aws": {
+                "name": "aws",
+                "full_name": "registry.terraform.io/hashicorp/aws",
+                "version_constraint": "~\u003e 5.94",
+                "expressions": {
+                    "region": {
+                        "references": [
+                            "var.region"
+                        ]
+                    }
+                }
+            }
+        },
+        "root_module": {
+            "outputs": {
+                "lambda_arn": {
+                    "expression": {
+                        "references": [
+                            "module.lambda.lambda_arn",
+                            "module.lambda"
+                        ]
+                    }
+                }
+            },
+            "resources": [
+                {
+                    "address": "aws_lambda_permission.trigger_lambda",
+                    "mode": "managed",
+                    "type": "aws_lambda_permission",
+                    "name": "trigger_lambda",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "action": {
+                            "constant_value": "lambda:InvokeFunction"
+                        },
+                        "function_name": {
+                            "references": [
+                                "module.lambda.function_name",
+                                "module.lambda"
+                            ]
+                        },
+                        "principal": {
+                            "constant_value": "events.amazonaws.com"
+                        },
+                        "source_arn": {
+                            "references": [
+                                "module.events_trigger.event_rule_arn",
+                                "module.events_trigger"
+                            ]
+                        },
+                        "statement_id": {
+                            "constant_value": "AllowExecutionFromEvents"
+                        }
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "data.aws_caller_identity.current",
+                    "mode": "data",
+                    "type": "aws_caller_identity",
+                    "name": "current",
+                    "provider_config_key": "aws",
+                    "schema_version": 0
+                },
+                {
+                    "address": "data.aws_iam_policy_document.assume_role",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "assume_role",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "statement": [
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "sts:AssumeRole"
+                                    ]
+                                },
+                                "effect": {
+                                    "constant_value": "Allow"
+                                },
+                                "principals": [
+                                    {
+                                        "identifiers": {
+                                            "constant_value": [
+                                                "lambda.amazonaws.com"
+                                            ]
+                                        },
+                                        "type": {
+                                            "constant_value": "Service"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "data.aws_iam_policy_document.events_assume_role",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "events_assume_role",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "statement": [
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "sts:AssumeRole"
+                                    ]
+                                },
+                                "principals": [
+                                    {
+                                        "identifiers": {
+                                            "constant_value": [
+                                                "events.amazonaws.com"
+                                            ]
+                                        },
+                                        "type": {
+                                            "constant_value": "Service"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "data.aws_iam_policy_document.events_policy",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "events_policy",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "statement": [
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "lambda:InvokeFunction"
+                                    ]
+                                },
+                                "effect": {
+                                    "constant_value": "Allow"
+                                },
+                                "resources": {
+                                    "references": [
+                                        "module.lambda.lambda_arn",
+                                        "module.lambda"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "data.aws_iam_policy_document.kms_policy",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "kms_policy",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "statement": [
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "kms:*"
+                                    ]
+                                },
+                                "effect": {
+                                    "constant_value": "Allow"
+                                },
+                                "principals": [
+                                    {
+                                        "identifiers": {
+                                            "references": [
+                                                "data.aws_caller_identity.current.arn",
+                                                "data.aws_caller_identity.current"
+                                            ]
+                                        },
+                                        "type": {
+                                            "constant_value": "AWS"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "kms:GenerateDataKey",
+                                        "kms:Decrypt"
+                                    ]
+                                },
+                                "principals": [
+                                    {
+                                        "identifiers": {
+                                            "constant_value": [
+                                                "lambda.amazonaws.com"
+                                            ]
+                                        },
+                                        "type": {
+                                            "constant_value": "Service"
+                                        }
+                                    }
+                                ],
+                                "resources": {
+                                    "constant_value": [
+                                        "*"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "data.aws_iam_policy_document.lambda_policy",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "lambda_policy",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "statement": [
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ]
+                                },
+                                "effect": {
+                                    "constant_value": "Allow"
+                                },
+                                "resources": {
+                                    "constant_value": [
+                                        "arn:aws:logs:*:*:*"
+                                    ]
+                                }
+                            },
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "s3:GetObject",
+                                        "s3:ListBucket"
+                                    ]
+                                },
+                                "resources": {
+                                    "references": [
+                                        "module.lambda.s3_bucket_arn",
+                                        "module.lambda",
+                                        "module.lambda.s3_bucket_arn",
+                                        "module.lambda"
+                                    ]
+                                }
+                            },
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "ecr:*"
+                                    ]
+                                },
+                                "resources": {
+                                    "constant_value": [
+                                        "*"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "data.aws_iam_policy_document.s3_bucket_policy",
+                    "mode": "data",
+                    "type": "aws_iam_policy_document",
+                    "name": "s3_bucket_policy",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "statement": [
+                            {
+                                "actions": {
+                                    "constant_value": [
+                                        "s3:GetObject",
+                                        "s3:ListBucket",
+                                        "s3:GetObjectVersion",
+                                        "s3:PutObject",
+                                        "S3:PutObjectAcl"
+                                    ]
+                                },
+                                "resources": {
+                                    "references": [
+                                        "module.lambda.s3_bucket_arn",
+                                        "module.lambda",
+                                        "module.lambda.s3_bucket_arn",
+                                        "module.lambda"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                }
+            ],
+            "module_calls": {
+                "events_trigger": {
+                    "source": "../common-resources/aws/eb_events",
+                    "expressions": {
+                        "event_pattern": {
+                            "references": [
+                                "local.event_pattern"
+                            ]
+                        },
+                        "event_rule_name": {
+                            "references": [
+                                "local.extra_tags.app-name",
+                                "local.extra_tags",
+                                "local.deployed_tags.project-name",
+                                "local.deployed_tags",
+                                "local.deployed_tags.env",
+                                "local.deployed_tags"
+                            ]
+                        },
+                        "event_rule_state": {
+                            "references": [
+                                "local.event_rule_state"
+                            ]
+                        },
+                        "tags": {
+                            "references": [
+                                "local.deployed_tags"
+                            ]
+                        },
+                        "target_id": {
+                            "references": [
+                                "local.extra_tags.app-name",
+                                "local.extra_tags",
+                                "local.deployed_tags.project-name",
+                                "local.deployed_tags",
+                                "local.deployed_tags.env",
+                                "local.deployed_tags"
+                            ]
+                        }
+                    },
+                    "module": {
+                        "outputs": {
+                            "event_rule_arn": {
+                                "expression": {
+                                    "references": [
+                                        "aws_cloudwatch_event_rule.event_rule.arn",
+                                        "aws_cloudwatch_event_rule.event_rule"
+                                    ]
+                                }
+                            },
+                            "event_rule_name": {
+                                "expression": {
+                                    "references": [
+                                        "aws_cloudwatch_event_rule.event_rule.id",
+                                        "aws_cloudwatch_event_rule.event_rule"
+                                    ]
+                                }
+                            }
+                        },
+                        "resources": [
+                            {
+                                "address": "aws_cloudwatch_event_rule.event_rule",
+                                "mode": "managed",
+                                "type": "aws_cloudwatch_event_rule",
+                                "name": "event_rule",
+                                "provider_config_key": "aws",
+                                "expressions": {
+                                    "event_bus_name": {
+                                        "references": [
+                                            "var.event_bus_name"
+                                        ]
+                                    },
+                                    "event_pattern": {
+                                        "references": [
+                                            "var.schedule_expr",
+                                            "var.event_pattern"
+                                        ]
+                                    },
+                                    "name": {
+                                        "references": [
+                                            "var.event_rule_name"
+                                        ]
+                                    },
+                                    "schedule_expression": {
+                                        "references": [
+                                            "var.event_pattern",
+                                            "var.schedule_expr"
+                                        ]
+                                    },
+                                    "state": {
+                                        "references": [
+                                            "var.event_rule_state"
+                                        ]
+                                    },
+                                    "tags": {
+                                        "references": [
+                                            "var.tags"
+                                        ]
+                                    }
+                                },
+                                "schema_version": 1
+                            },
+                            {
+                                "address": "aws_cloudwatch_event_target.event_target",
+                                "mode": "managed",
+                                "type": "aws_cloudwatch_event_target",
+                                "name": "event_target",
+                                "provider_config_key": "aws",
+                                "expressions": {
+                                    "arn": {
+                                        "references": [
+                                            "var.target_role_arn"
+                                        ]
+                                    },
+                                    "event_bus_name": {
+                                        "references": [
+                                            "var.event_bus_name"
+                                        ]
+                                    },
+                                    "role_arn": {
+                                        "references": [
+                                            "var.target_role_arn",
+                                            "var.target_role_arn"
+                                        ]
+                                    },
+                                    "rule": {
+                                        "references": [
+                                            "aws_cloudwatch_event_rule.event_rule.name",
+                                            "aws_cloudwatch_event_rule.event_rule"
+                                        ]
+                                    },
+                                    "target_id": {
+                                        "references": [
+                                            "var.target_id"
+                                        ]
+                                    }
+                                },
+                                "schema_version": 1
+                            }
+                        ],
+                        "variables": {
+                            "event_bus_name": {
+                                "default": "default"
+                            },
+                            "event_pattern": {
+                                "default": ""
+                            },
+                            "event_rule_name": {},
+                            "event_rule_state": {},
+                            "schedule_expr": {
+                                "default": ""
+                            },
+                            "tags": {},
+                            "target_id": {},
+                            "target_role_arn": {
+                                "default": ""
+                            }
+                        }
+                    }
+                },
+                "lambda": {
+                    "source": "../modiules/aws/lambda",
+                    "expressions": {
+                        "assume_role_policy": {
+                            "references": [
+                                "local.assume_role_policy"
+                            ]
+                        },
+                        "bucket_policy": {
+                            "references": [
+                                "local.bucket_policy"
+                            ]
+                        },
+                        "compatible_runtimes": {
+                            "references": [
+                                "local.compatible_runtimes"
+                            ]
+                        },
+                        "create_bucket": {
+                            "constant_value": true
+                        },
+                        "create_layer": {
+                            "constant_value": true
+                        },
+                        "function_name": {
+                            "references": [
+                                "local.extra_tags.app-name",
+                                "local.extra_tags",
+                                "local.deployed_tags.project-name",
+                                "local.deployed_tags",
+                                "local.deployed_tags.env",
+                                "local.deployed_tags"
+                            ]
+                        },
+                        "handler": {
+                            "references": [
+                                "local.handler"
+                            ]
+                        },
+                        "iam_policy": {
+                            "references": [
+                                "local.iam_policy"
+                            ]
+                        },
+                        "iam_policy_name": {
+                            "references": [
+                                "local.extra_tags.app-name",
+                                "local.extra_tags",
+                                "local.deployed_tags.project-name",
+                                "local.deployed_tags",
+                                "local.deployed_tags.env",
+                                "local.deployed_tags"
+                            ]
+                        },
+                        "kms_policy": {
+                            "references": [
+                                "local.kms_policy"
+                            ]
+                        },
+                        "layer_name": {
+                            "references": [
+                                "local.extra_tags.app-name",
+                                "local.extra_tags",
+                                "local.deployed_tags.project-name",
+                                "local.deployed_tags",
+                                "local.deployed_tags.env",
+                                "local.deployed_tags"
+                            ]
+                        },
+                        "role_name": {
+                            "references": [
+                                "local.extra_tags.app-name",
+                                "local.extra_tags",
+                                "local.deployed_tags.project-name",
+                                "local.deployed_tags",
+                                "local.deployed_tags.env",
+                                "local.deployed_tags"
+                            ]
+                        },
+                        "runtime": {
+                            "references": [
+                                "local.runtime"
+                            ]
+                        },
+                        "s3_bucket": {
+                            "references": [
+                                "local.extra_tags.app-name",
+                                "local.extra_tags",
+                                "local.deployed_tags.project-name",
+                                "local.deployed_tags",
+                                "local.deployed_tags.env",
+                                "local.deployed_tags"
+                            ]
+                        }
+                    },
+                    "module": {
+                        "outputs": {
+                            "function_name": {
+                                "expression": {
+                                    "references": [
+                                        "aws_lambda_function.lambda.function_name",
+                                        "aws_lambda_function.lambda"
+                                    ]
+                                }
+                            },
+                            "lambda_arn": {
+                                "expression": {
+                                    "references": [
+                                        "aws_lambda_function.lambda.arn",
+                                        "aws_lambda_function.lambda"
+                                    ]
+                                }
+                            },
+                            "layer_arn": {
+                                "expression": {
+                                    "references": [
+                                        "module.layer[0].layer_arn",
+                                        "module.layer[0]"
+                                    ]
+                                }
+                            },
+                            "layer_version_arn": {
+                                "expression": {
+                                    "references": [
+                                        "module.layer[0].layer_version_arn",
+                                        "module.layer[0]"
+                                    ]
+                                }
+                            },
+                            "s3_bucket_arn": {
+                                "expression": {
+                                    "references": [
+                                        "module.s3_bucket[0].s3_bucket_arn",
+                                        "module.s3_bucket[0]"
+                                    ]
+                                }
+                            },
+                            "s3_bucket_name": {
+                                "expression": {
+                                    "references": [
+                                        "module.s3_bucket[0].s3_bucket_name",
+                                        "module.s3_bucket[0]"
+                                    ]
+                                }
+                            }
+                        },
+                        "resources": [
+                            {
+                                "address": "aws_lambda_function.lambda",
+                                "mode": "managed",
+                                "type": "aws_lambda_function",
+                                "name": "lambda",
+                                "provider_config_key": "aws",
+                                "expressions": {
+                                    "ephemeral_storage": [
+                                        {
+                                            "size": {
+                                                "references": [
+                                                    "var.ephemeral_storage"
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "filename": {
+                                        "references": [
+                                            "var.filename",
+                                            "var.s3_bucket",
+                                            "var.image_uri",
+                                            "var.filename"
+                                        ]
+                                    },
+                                    "function_name": {
+                                        "references": [
+                                            "var.function_name"
+                                        ]
+                                    },
+                                    "handler": {
+                                        "references": [
+                                            "var.handler"
+                                        ]
+                                    },
+                                    "image_uri": {
+                                        "references": [
+                                            "var.image_uri",
+                                            "var.filename",
+                                            "var.s3_bucket",
+                                            "var.image_uri"
+                                        ]
+                                    },
+                                    "layers": {
+                                        "references": [
+                                            "var.layers",
+                                            "var.create_layer",
+                                            "var.layers",
+                                            "module.layer[0].layer_version_arn",
+                                            "module.layer[0]"
+                                        ]
+                                    },
+                                    "memory_size": {
+                                        "references": [
+                                            "var.memory_size"
+                                        ]
+                                    },
+                                    "role": {
+                                        "references": [
+                                            "var.iam_for_lambda",
+                                            "var.iam_for_lambda",
+                                            "module.execution_role[0].iam_role_arn",
+                                            "module.execution_role[0]"
+                                        ]
+                                    },
+                                    "runtime": {
+                                        "references": [
+                                            "var.runtime"
+                                        ]
+                                    },
+                                    "s3_bucket": {
+                                        "references": [
+                                            "var.s3_bucket",
+                                            "var.filename",
+                                            "var.image_uri",
+                                            "var.s3_bucket"
+                                        ]
+                                    },
+                                    "s3_key": {
+                                        "references": [
+                                            "var.s3_bucket",
+                                            "var.s3_key"
+                                        ]
+                                    },
+                                    "s3_object_version": {
+                                        "references": [
+                                            "var.s3_key",
+                                            "var.s3_object_version",
+                                            "var.s3_object_version"
+                                        ]
+                                    },
+                                    "tags": {
+                                        "references": [
+                                            "var.tags"
+                                        ]
+                                    },
+                                    "timeout": {
+                                        "references": [
+                                            "var.timeout"
+                                        ]
+                                    }
+                                },
+                                "schema_version": 0,
+                                "depends_on": [
+                                    "module.log_group"
+                                ]
+                            }
+                        ],
+                        "module_calls": {
+                            "execution_role": {
+                                "source": "../../../common-resources/aws/iam_role",
+                                "expressions": {
+                                    "assume_role_policy": {
+                                        "references": [
+                                            "var.assume_role_policy"
+                                        ]
+                                    },
+                                    "iam_policy": {
+                                        "references": [
+                                            "var.iam_policy"
+                                        ]
+                                    },
+                                    "iam_policy_name": {
+                                        "references": [
+                                            "var.iam_policy_name"
+                                        ]
+                                    },
+                                    "role_name": {
+                                        "references": [
+                                            "var.role_name"
+                                        ]
+                                    }
+                                },
+                                "count_expression": {
+                                    "references": [
+                                        "var.iam_for_lambda"
+                                    ]
+                                },
+                                "module": {
+                                    "outputs": {
+                                        "iam_role_arn": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_iam_role.iam_role.arn",
+                                                    "aws_iam_role.iam_role"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "resources": [
+                                        {
+                                            "address": "aws_iam_policy.iam_policy",
+                                            "mode": "managed",
+                                            "type": "aws_iam_policy",
+                                            "name": "iam_policy",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "name": {
+                                                    "references": [
+                                                        "var.iam_policy_name"
+                                                    ]
+                                                },
+                                                "policy": {
+                                                    "references": [
+                                                        "var.iam_policy"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0,
+                                            "count_expression": {
+                                                "references": [
+                                                    "var.policy_arn"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "address": "aws_iam_role.iam_role",
+                                            "mode": "managed",
+                                            "type": "aws_iam_role",
+                                            "name": "iam_role",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "assume_role_policy": {
+                                                    "references": [
+                                                        "var.assume_role_policy"
+                                                    ]
+                                                },
+                                                "max_session_duration": {
+                                                    "references": [
+                                                        "var.max_session"
+                                                    ]
+                                                },
+                                                "name": {
+                                                    "references": [
+                                                        "var.role_name"
+                                                    ]
+                                                },
+                                                "tags": {
+                                                    "references": [
+                                                        "var.tags"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        },
+                                        {
+                                            "address": "aws_iam_role_policy_attachment.policy_attach",
+                                            "mode": "managed",
+                                            "type": "aws_iam_role_policy_attachment",
+                                            "name": "policy_attach",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "policy_arn": {
+                                                    "references": [
+                                                        "var.policy_arn",
+                                                        "aws_iam_policy.iam_policy[0].arn",
+                                                        "aws_iam_policy.iam_policy[0]",
+                                                        "aws_iam_policy.iam_policy",
+                                                        "var.policy_arn"
+                                                    ]
+                                                },
+                                                "role": {
+                                                    "references": [
+                                                        "aws_iam_role.iam_role.name",
+                                                        "aws_iam_role.iam_role"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        }
+                                    ],
+                                    "variables": {
+                                        "assume_role_policy": {},
+                                        "iam_policy": {},
+                                        "iam_policy_name": {},
+                                        "max_session": {
+                                            "default": 3600
+                                        },
+                                        "policy_arn": {
+                                            "default": ""
+                                        },
+                                        "role_name": {},
+                                        "tags": {
+                                            "default": {
+                                                "env": "test",
+                                                "project": "my-project"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "kms_key": {
+                                "source": "../../../common-resources/aws/kms",
+                                "expressions": {
+                                    "kms_policy": {
+                                        "references": [
+                                            "var.kms_policy"
+                                        ]
+                                    }
+                                },
+                                "count_expression": {
+                                    "references": [
+                                        "var.kms_key_arn"
+                                    ]
+                                },
+                                "module": {
+                                    "outputs": {
+                                        "kms_key_arn": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_kms_key.kms_key.arn",
+                                                    "aws_kms_key.kms_key"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "resources": [
+                                        {
+                                            "address": "aws_kms_key.kms_key",
+                                            "mode": "managed",
+                                            "type": "aws_kms_key",
+                                            "name": "kms_key",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "deletion_window_in_days": {
+                                                    "references": [
+                                                        "var.key_rotation.deletion_window",
+                                                        "var.key_rotation"
+                                                    ]
+                                                },
+                                                "enable_key_rotation": {
+                                                    "references": [
+                                                        "var.key_rotation.enable",
+                                                        "var.key_rotation"
+                                                    ]
+                                                },
+                                                "policy": {
+                                                    "references": [
+                                                        "var.kms_policy"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        }
+                                    ],
+                                    "variables": {
+                                        "key_rotation": {
+                                            "default": {
+                                                "deletion_window": 20,
+                                                "enable": false
+                                            }
+                                        },
+                                        "kms_policy": {}
+                                    }
+                                }
+                            },
+                            "layer": {
+                                "source": "../../../common-resources/aws/lambda_layer",
+                                "expressions": {
+                                    "compatible_runtimes": {
+                                        "references": [
+                                            "var.compatible_runtimes"
+                                        ]
+                                    },
+                                    "filename": {
+                                        "constant_value": "kerrjek.zip"
+                                    },
+                                    "layer_name": {
+                                        "references": [
+                                            "var.layer_name"
+                                        ]
+                                    }
+                                },
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_layer"
+                                    ]
+                                },
+                                "module": {
+                                    "outputs": {
+                                        "layer_arn": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_lambda_layer_version.lambda_layer.layer_arn",
+                                                    "aws_lambda_layer_version.lambda_layer"
+                                                ]
+                                            }
+                                        },
+                                        "layer_version": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_lambda_layer_version.lambda_layer.version",
+                                                    "aws_lambda_layer_version.lambda_layer"
+                                                ]
+                                            }
+                                        },
+                                        "layer_version_arn": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_lambda_layer_version.lambda_layer.arn",
+                                                    "aws_lambda_layer_version.lambda_layer"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "resources": [
+                                        {
+                                            "address": "aws_lambda_layer_version.lambda_layer",
+                                            "mode": "managed",
+                                            "type": "aws_lambda_layer_version",
+                                            "name": "lambda_layer",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "compatible_runtimes": {
+                                                    "references": [
+                                                        "var.compatible_runtimes"
+                                                    ]
+                                                },
+                                                "filename": {
+                                                    "references": [
+                                                        "var.layer_bucket",
+                                                        "var.filename"
+                                                    ]
+                                                },
+                                                "layer_name": {
+                                                    "references": [
+                                                        "var.layer_name"
+                                                    ]
+                                                },
+                                                "s3_bucket": {
+                                                    "references": [
+                                                        "var.filename",
+                                                        "var.layer_bucket"
+                                                    ]
+                                                },
+                                                "s3_key": {
+                                                    "references": [
+                                                        "var.layer_bucket",
+                                                        "var.layer_bucket_key"
+                                                    ]
+                                                },
+                                                "s3_object_version": {
+                                                    "references": [
+                                                        "var.layer_bucket",
+                                                        "var.layer_obj_version"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        }
+                                    ],
+                                    "variables": {
+                                        "compatible_runtimes": {},
+                                        "create_layer": {
+                                            "default": false
+                                        },
+                                        "filename": {
+                                            "default": ""
+                                        },
+                                        "layer_bucket": {
+                                            "default": ""
+                                        },
+                                        "layer_bucket_key": {
+                                            "default": ""
+                                        },
+                                        "layer_name": {},
+                                        "layer_obj_version": {
+                                            "default": ""
+                                        }
+                                    }
+                                }
+                            },
+                            "log_group": {
+                                "source": "../../../common-resources/aws/cw_log",
+                                "expressions": {
+                                    "log_group": {
+                                        "references": [
+                                            "var.function_name"
+                                        ]
+                                    },
+                                    "retention_in_days": {
+                                        "references": [
+                                            "var.lambda_log_retention"
+                                        ]
+                                    }
+                                },
+                                "module": {
+                                    "outputs": {
+                                        "log_group_arn": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_cloudwatch_log_group.log_group.arn",
+                                                    "aws_cloudwatch_log_group.log_group"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "resources": [
+                                        {
+                                            "address": "aws_cloudwatch_log_group.log_group",
+                                            "mode": "managed",
+                                            "type": "aws_cloudwatch_log_group",
+                                            "name": "log_group",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "kms_key_id": {
+                                                    "references": [
+                                                        "var.kms_key_id"
+                                                    ]
+                                                },
+                                                "name": {
+                                                    "references": [
+                                                        "var.log_group"
+                                                    ]
+                                                },
+                                                "retention_in_days": {
+                                                    "references": [
+                                                        "var.retention_in_days"
+                                                    ]
+                                                },
+                                                "tags": {
+                                                    "references": [
+                                                        "var.tags"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        }
+                                    ],
+                                    "variables": {
+                                        "kms_key_id": {
+                                            "default": null
+                                        },
+                                        "log_group": {},
+                                        "retention_in_days": {
+                                            "default": null
+                                        },
+                                        "tags": {
+                                            "default": {
+                                                "env": "test",
+                                                "project": "my-project"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "s3_bucket": {
+                                "source": "../../../common-resources/aws/s3",
+                                "expressions": {
+                                    "bucket_name": {
+                                        "references": [
+                                            "var.function_name"
+                                        ]
+                                    },
+                                    "bucket_policy": {
+                                        "references": [
+                                            "var.bucket_policy"
+                                        ]
+                                    },
+                                    "kms_key_arn": {
+                                        "references": [
+                                            "var.kms_key_arn",
+                                            "var.kms_key_arn",
+                                            "module.kms_key[0].kms_key_arn",
+                                            "module.kms_key[0]"
+                                        ]
+                                    }
+                                },
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket"
+                                    ]
+                                },
+                                "module": {
+                                    "outputs": {
+                                        "s3_bucket_arn": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_s3_bucket.s3_bucket.arn",
+                                                    "aws_s3_bucket.s3_bucket"
+                                                ]
+                                            }
+                                        },
+                                        "s3_bucket_name": {
+                                            "expression": {
+                                                "references": [
+                                                    "aws_s3_bucket.s3_bucket.id",
+                                                    "aws_s3_bucket.s3_bucket"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "resources": [
+                                        {
+                                            "address": "aws_s3_bucket.s3_bucket",
+                                            "mode": "managed",
+                                            "type": "aws_s3_bucket",
+                                            "name": "s3_bucket",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "bucket": {
+                                                    "references": [
+                                                        "var.bucket_name"
+                                                    ]
+                                                },
+                                                "tags": {
+                                                    "references": [
+                                                        "var.tags"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        },
+                                        {
+                                            "address": "aws_s3_bucket_acl.bucket_acl",
+                                            "mode": "managed",
+                                            "type": "aws_s3_bucket_acl",
+                                            "name": "bucket_acl",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "acl": {
+                                                    "references": [
+                                                        "var.bucket_acl"
+                                                    ]
+                                                },
+                                                "bucket": {
+                                                    "references": [
+                                                        "aws_s3_bucket.s3_bucket.id",
+                                                        "aws_s3_bucket.s3_bucket"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0,
+                                            "count_expression": {
+                                                "references": [
+                                                    "var.bucket_acl"
+                                                ]
+                                            },
+                                            "depends_on": [
+                                                "aws_s3_bucket_public_access_block.bucket_acl"
+                                            ]
+                                        },
+                                        {
+                                            "address": "aws_s3_bucket_lifecycle_configuration.example",
+                                            "mode": "managed",
+                                            "type": "aws_s3_bucket_lifecycle_configuration",
+                                            "name": "example",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "bucket": {
+                                                    "references": [
+                                                        "aws_s3_bucket.s3_bucket.id",
+                                                        "aws_s3_bucket.s3_bucket"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 1
+                                        },
+                                        {
+                                            "address": "aws_s3_bucket_policy.bucket_policy",
+                                            "mode": "managed",
+                                            "type": "aws_s3_bucket_policy",
+                                            "name": "bucket_policy",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "bucket": {
+                                                    "references": [
+                                                        "aws_s3_bucket.s3_bucket.id",
+                                                        "aws_s3_bucket.s3_bucket"
+                                                    ]
+                                                },
+                                                "policy": {
+                                                    "references": [
+                                                        "var.bucket_policy"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        },
+                                        {
+                                            "address": "aws_s3_bucket_public_access_block.bucket_acl",
+                                            "mode": "managed",
+                                            "type": "aws_s3_bucket_public_access_block",
+                                            "name": "bucket_acl",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "block_public_acls": {
+                                                    "references": [
+                                                        "var.bucket_pub_access[\"blck_pub_acls\"]",
+                                                        "var.bucket_pub_access"
+                                                    ]
+                                                },
+                                                "block_public_policy": {
+                                                    "references": [
+                                                        "var.bucket_pub_access[\"blk_pub_policy\"]",
+                                                        "var.bucket_pub_access"
+                                                    ]
+                                                },
+                                                "bucket": {
+                                                    "references": [
+                                                        "aws_s3_bucket.s3_bucket.id",
+                                                        "aws_s3_bucket.s3_bucket"
+                                                    ]
+                                                },
+                                                "ignore_public_acls": {
+                                                    "references": [
+                                                        "var.bucket_pub_access[\"ign_pub_acls\"]",
+                                                        "var.bucket_pub_access"
+                                                    ]
+                                                },
+                                                "restrict_public_buckets": {
+                                                    "references": [
+                                                        "var.bucket_pub_access[\"restr_pub_buckets\"]",
+                                                        "var.bucket_pub_access"
+                                                    ]
+                                                }
+                                            },
+                                            "schema_version": 0
+                                        },
+                                        {
+                                            "address": "aws_s3_bucket_server_side_encryption_configuration.sse_encryption",
+                                            "mode": "managed",
+                                            "type": "aws_s3_bucket_server_side_encryption_configuration",
+                                            "name": "sse_encryption",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "bucket": {
+                                                    "references": [
+                                                        "aws_s3_bucket.s3_bucket.id",
+                                                        "aws_s3_bucket.s3_bucket"
+                                                    ]
+                                                },
+                                                "rule": [
+                                                    {
+                                                        "apply_server_side_encryption_by_default": [
+                                                            {
+                                                                "kms_master_key_id": {
+                                                                    "references": [
+                                                                        "var.kms_key_arn"
+                                                                    ]
+                                                                },
+                                                                "sse_algorithm": {
+                                                                    "references": [
+                                                                        "var.sse_algorithm"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "schema_version": 0
+                                        },
+                                        {
+                                            "address": "aws_s3_bucket_versioning.versioning_example",
+                                            "mode": "managed",
+                                            "type": "aws_s3_bucket_versioning",
+                                            "name": "versioning_example",
+                                            "provider_config_key": "aws",
+                                            "expressions": {
+                                                "bucket": {
+                                                    "references": [
+                                                        "aws_s3_bucket.s3_bucket.id",
+                                                        "aws_s3_bucket.s3_bucket"
+                                                    ]
+                                                },
+                                                "versioning_configuration": [
+                                                    {
+                                                        "status": {
+                                                            "references": [
+                                                                "var.versioning_status"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "schema_version": 0,
+                                            "count_expression": {
+                                                "references": [
+                                                    "var.versioning_status"
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "variables": {
+                                        "bucket_acl": {
+                                            "default": "private"
+                                        },
+                                        "bucket_name": {},
+                                        "bucket_policy": {},
+                                        "bucket_pub_access": {
+                                            "default": {
+                                                "blck_pub_acls": true,
+                                                "blk_pub_policy": true,
+                                                "ign_pub_acls": true,
+                                                "restr_pub_buckets": true
+                                            }
+                                        },
+                                        "kms_key_arn": {},
+                                        "lifecycle_rule": {
+                                            "default": null
+                                        },
+                                        "sse_algorithm": {
+                                            "default": "aws:kms"
+                                        },
+                                        "tags": {
+                                            "default": {
+                                                "env": "test",
+                                                "project": "my-project"
+                                            }
+                                        },
+                                        "versioning_status": {
+                                            "default": "Disabled"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "variables": {
+                            "assume_role_policy": {},
+                            "bucket_policy": {},
+                            "compatible_runtimes": {},
+                            "create_bucket": {
+                                "default": false
+                            },
+                            "create_layer": {
+                                "default": false
+                            },
+                            "ephemeral_storage": {
+                                "default": 4096
+                            },
+                            "filename": {
+                                "default": ""
+                            },
+                            "function_name": {},
+                            "handler": {},
+                            "iam_for_lambda": {
+                                "default": ""
+                            },
+                            "iam_policy": {},
+                            "iam_policy_name": {},
+                            "image_uri": {
+                                "default": ""
+                            },
+                            "kms_key_arn": {
+                                "default": ""
+                            },
+                            "kms_policy": {},
+                            "lambda_log_retention": {
+                                "default": 7
+                            },
+                            "layer_name": {},
+                            "layers": {
+                                "default": []
+                            },
+                            "memory_size": {
+                                "default": 2048
+                            },
+                            "role_name": {},
+                            "runtime": {},
+                            "s3_bucket": {
+                                "default": ""
+                            },
+                            "s3_key": {
+                                "default": ""
+                            },
+                            "s3_object_version": {
+                                "default": ""
+                            },
+                            "tags": {
+                                "default": {
+                                    "env": "test",
+                                    "project": "my-project"
+                                }
+                            },
+                            "timeout": {
+                                "default": 5
+                            }
+                        }
+                    }
+                }
+            },
+            "variables": {
+                "region": {},
+                "tags": {}
+            }
+        }
+    },
+    "relevant_attributes": [
+        {
+            "resource": "module.lambda.module.log_group.aws_cloudwatch_log_group.log_group",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.execution_role[0].aws_iam_role.iam_role",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.s3_bucket[0].aws_s3_bucket.s3_bucket",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "data.aws_iam_policy_document.lambda_policy",
+            "attribute": [
+                "json"
+            ]
+        },
+        {
+            "resource": "data.aws_iam_policy_document.assume_role",
+            "attribute": [
+                "json"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.s3_bucket[0].aws_s3_bucket.s3_bucket",
+            "attribute": [
+                "id"
+            ]
+        },
+        {
+            "resource": "module.lambda.aws_lambda_function.lambda",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "module.lambda.aws_lambda_function.lambda",
+            "attribute": [
+                "function_name"
+            ]
+        },
+        {
+            "resource": "data.aws_iam_policy_document.s3_bucket_policy",
+            "attribute": [
+                "json"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.execution_role[0].aws_iam_policy.iam_policy[0]",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.execution_role[0].aws_iam_role.iam_role",
+            "attribute": [
+                "name"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.layer[0].aws_lambda_layer_version.lambda_layer",
+            "attribute": [
+                "layer_arn"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.kms_key[0].aws_kms_key.kms_key",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "data.aws_iam_policy_document.kms_policy",
+            "attribute": [
+                "json"
+            ]
+        },
+        {
+            "resource": "module.events_trigger.aws_cloudwatch_event_rule.event_rule",
+            "attribute": [
+                "name"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.layer[0].aws_lambda_layer_version.lambda_layer",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "module.lambda.module.layer[0].aws_lambda_layer_version.lambda_layer",
+            "attribute": [
+                "version"
+            ]
+        },
+        {
+            "resource": "module.events_trigger.aws_cloudwatch_event_rule.event_rule",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "module.events_trigger.aws_cloudwatch_event_rule.event_rule",
+            "attribute": [
+                "id"
+            ]
+        }
+    ],
+    "checks": [
+        {
+            "address": {
+                "kind": "var",
+                "module": "module.events_trigger",
+                "name": "event_rule_state",
+                "to_display": "module.events_trigger.var.event_rule_state"
+            },
+            "status": "pass",
+            "instances": [
+                {
+                    "address": {
+                        "module": "module.events_trigger",
+                        "to_display": "module.events_trigger.var.event_rule_state"
+                    },
+                    "status": "pass"
+                }
+            ]
+        },
+        {
+            "address": {
+                "kind": "var",
+                "module": "module.lambda.module.s3_bucket",
+                "name": "bucket_acl",
+                "to_display": "module.lambda.module.s3_bucket.var.bucket_acl"
+            },
+            "status": "pass",
+            "instances": [
+                {
+                    "address": {
+                        "module": "module.lambda.module.s3_bucket[0]",
+                        "to_display": "module.lambda.module.s3_bucket[0].var.bucket_acl"
+                    },
+                    "status": "pass"
+                }
+            ]
+        },
+        {
+            "address": {
+                "kind": "var",
+                "module": "module.lambda.module.s3_bucket",
+                "name": "versioning_status",
+                "to_display": "module.lambda.module.s3_bucket.var.versioning_status"
+            },
+            "status": "pass",
+            "instances": [
+                {
+                    "address": {
+                        "module": "module.lambda.module.s3_bucket[0]",
+                        "to_display": "module.lambda.module.s3_bucket[0].var.versioning_status"
+                    },
+                    "status": "pass"
+                }
+            ]
+        },
+        {
+            "address": {
+                "kind": "var",
+                "module": "module.lambda",
+                "name": "layers",
+                "to_display": "module.lambda.var.layers"
+            },
+            "status": "pass",
+            "instances": [
+                {
+                    "address": {
+                        "module": "module.lambda",
+                        "to_display": "module.lambda.var.layers"
+                    },
+                    "status": "pass"
+                }
+            ]
+        }
+    ],
+    "timestamp": "2025-04-19T15:42:14Z",
+    "applyable": true,
+    "complete": true,
+    "errored": false
+}
