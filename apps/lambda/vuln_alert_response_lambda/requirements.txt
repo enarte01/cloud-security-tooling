@@ -1,4 +1,4 @@
-jinja 3.1.6
+jinja2
 slack_sdk
 jira
 boto3
