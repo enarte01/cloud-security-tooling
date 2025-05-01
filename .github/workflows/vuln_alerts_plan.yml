@@ -213,14 +213,12 @@ jobs:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
     concurrency: vuln-alerts
-    strategy:
-      matrix:
-        tf_dir: ${{needs.prerequisites.outputs.changed_tf}}
-    
-    #check if needs code scan - yes
     needs:
       - prerequisites
       - code_scan
+    strategy:
+      matrix:
+        tf_dir: ${{fromJson(needs.prerequisites.outputs.changed_tf)}}  
     outputs:
       terraform_plan_exitcode: ${{ steps.tf_plan.outputs.terraform_plan_exitcode }}
     steps:
