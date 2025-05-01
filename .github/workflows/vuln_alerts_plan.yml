@@ -225,7 +225,7 @@ jobs:
           IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
           echo "[${APP_MODULES[@]}]"
           echo "[${{  needs.prerequisites.outputs.changed_apps }}]"
-          echo 'matrix={\"tf_dir\":[${APP_MODULES[@]}]}' >> "$GITHUB_OUTPUT"
+          echo "matrix={"tf_dir":[${APP_MODULES[@]}]}" >> "$GITHUB_OUTPUT"
 
 
   terraform_plan:
