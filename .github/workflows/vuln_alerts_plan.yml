@@ -209,7 +209,7 @@ jobs:
 
   terraform_plan:
   #run only if terraform/apps/lambda/** changes, then plan only the folder(s) with changes
-    if: ${{ needs.prerequisites.outputs.changed_tf > 0 }}
+    if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform Plan"
     runs-on: ubuntu-latest
     concurrency: vuln-alerts
