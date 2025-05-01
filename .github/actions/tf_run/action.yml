@@ -1,13 +1,13 @@
 name: Terraform Run
 description: Runs a Terraform Plan or Apply against an AWS account, assumes the correct role has been assumed above
 inputs:
-  aws_role:
-    description: 'AWS Role to assume to perform Terraform plan'
-    required: true
-  role_session_name: 
-    description: 'AWS role session name'
-    default: 'tfghIACSessionName'
-    required: true
+#  aws_role:
+#    description: 'AWS Role to assume to perform Terraform plan'
+#    required: true
+#  role_session_name: 
+#    description: 'AWS role session name'
+#    default: 'tfghIACSessionName'
+#    required: true
   terraform_action:
     description: 'Terraform action to perform, options are "plan" and "apply"'
     default: 'plan'
@@ -25,10 +25,10 @@ inputs:
   tf_working_dir:
     description: 'The Terraform Directory to run in'
     required: true
-  role_session_duration:
-    description: 'The duration of the assumed role session'
-    default: '1200'
-    required: false
+#  role_session_duration:
+#    description: 'The duration of the assumed role session'
+#    default: '1200'
+#    required: false
 
 
 outputs:
@@ -42,14 +42,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-region: eu-west-2
-        role-to-assume: ${{ inputs.aws_role }}
-        role-session-name: ${{ inputs.role_session_name }}
-        role-duration-seconds: ${{ inputs.role_session_duration }}
-
     - name: "setup-terraform"
       uses: hashicorp/setup-terraform@v2
       with:
