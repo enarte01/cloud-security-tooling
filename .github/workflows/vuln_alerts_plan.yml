@@ -215,7 +215,7 @@ jobs:
     concurrency: vuln-alerts
     strategy:
       matrix:
-        tf_dir: ${{needs.prerequisites.outputs.changed_tf}}
+        tf_dir: ${{(needs.prerequisites.outputs.changed_tf)}}
     
     #check if needs code scan - yes
     needs:
