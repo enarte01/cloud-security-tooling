@@ -25,7 +25,7 @@ inputs:
   tf_working_dir:
     description: 'The Terraform Directory to run in'
     required: true
-  tf_session_duration:
+  role_session_duration:
     description: 'The duration of the assumed role session'
     default: '1200'
     required: false
@@ -48,7 +48,7 @@ runs:
         aws-region: eu-west-2
         role-to-assume: ${{ inputs.aws_role }}
         role-session-name: ${{ inputs.role_session_name }}
-        role-duration-seconds: ${{ inputs.tf_session_duration }}
+        role-duration-seconds: ${{ inputs.role_session_duration }}
 
     - name: "setup-terraform"
       uses: hashicorp/setup-terraform@v2

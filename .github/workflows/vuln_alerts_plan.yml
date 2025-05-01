@@ -268,6 +268,6 @@ jobs:
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
           tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
-          tf_session_duration: 600
+          role_session_duration: 900
           role_session_name: tfghIACSessionName
           
