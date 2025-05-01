@@ -207,6 +207,26 @@ jobs:
           trivy_severity: 'CRITICAL'
     #upload trivvy scan results
 
+  terraform_matrix:
+    if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
+    name: "Terraform matrix"
+    runs-on: ubuntu-latest
+    concurrency: vuln-alerts
+    outputs:
+      tf_matrix:  ${{ steps.tf_matrix.outputs.matrix }}
+    needs:
+      - prerequisites
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Tf matrix
+        id: tf_matrix
+        run: |
+          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
+          echo "[${APP_MODULES[@]}]"
+          echo "matrix=[${APP_MODULES[@]}]" >> "$GITHUB_OUTPUT"
+
+
   terraform_plan:
   #run only if terraform/apps/lambda/** changes, then plan only the folder(s) with changes
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
