@@ -251,9 +251,10 @@ jobs:
         id: tf_plan
         uses: ./.github/actions/tf_run
         with:
+          tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
           aws_role: ${{ env.AWS_GH_ROLE }}
           terraform_action: 'plan'
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
-          tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
+          
