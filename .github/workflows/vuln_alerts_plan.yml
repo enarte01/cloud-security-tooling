@@ -211,7 +211,7 @@ jobs:
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform matrix"
     runs-on: ubuntu-latest
-    concurrency: vuln-alerts
+    #concurrency: vuln-alerts
     outputs:
       tf_matrix:  ${{ steps.tf_matrix.outputs.matrix }}
     needs:
