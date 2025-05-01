@@ -162,7 +162,7 @@ jobs:
           IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps}}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
-            echo found=$(find -type d -name tests*)
+            found=$(find -type d -name tests*)
             echo "found is $found"
             if [[ -n ${found} ]]; then
               source ./venv/bin/activate
