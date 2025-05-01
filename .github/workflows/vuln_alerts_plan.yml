@@ -225,7 +225,7 @@ jobs:
           IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
           echo "[${APP_MODULES[@]}]"
           echo "[${{  needs.prerequisites.outputs.changed_apps }}]"
-          echo 'matrix=["vuln_alert_response_lambda"]' >> "$GITHUB_OUTPUT"
+          echo 'matrix={\"tf_dir\":[${APP_MODULES[@]}]}' >> "$GITHUB_OUTPUT"
 
 
   terraform_plan:
@@ -239,8 +239,7 @@ jobs:
       - code_scan
       - terraform_matrix
     strategy:
-      matrix:
-        tf_dir: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
+      matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     outputs:
       terraform_plan_exitcode: ${{ steps.tf_plan.outputs.terraform_plan_exitcode }}
     steps:
@@ -251,10 +250,10 @@ jobs:
         id: tf_plan
         uses: ./.github/actions/tf_run
         with:
-          tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
           aws_role: ${{ env.AWS_GH_ROLE }}
           terraform_action: 'plan'
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
+          tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
           
