@@ -260,7 +260,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GH_ROLE}}
           role-duration-seconds: 600
           role-session-name: tfghIACSessionName
-          with:
       - name: Terraform Plan
         id: tf_plan
         uses: ./.github/actions/tf_run
