@@ -236,9 +236,10 @@ jobs:
     needs:
       - prerequisites
       - code_scan
+      - terraform_matrix
     strategy:
       matrix:
-        tf_dir: ${{fromJson(needs.prerequisites.outputs.changed_tf)}}  
+        tf_dir: ${{needs.terraform_matrix.outputs.tf_matrix}}  
     outputs:
       terraform_plan_exitcode: ${{ steps.tf_plan.outputs.terraform_plan_exitcode }}
     steps:
