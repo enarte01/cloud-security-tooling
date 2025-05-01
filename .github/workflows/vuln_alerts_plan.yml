@@ -225,7 +225,7 @@ jobs:
           IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
           echo "[${APP_MODULES[@]}]"
           echo "[${{  needs.prerequisites.outputs.changed_apps }}]"
-          echo 'matrix=[${APP_MODULES[@]}]' >> "$GITHUB_OUTPUT"
+          echo 'matrix=["vuln_alert_response_lambda"]' >> "$GITHUB_OUTPUT"
 
 
   terraform_plan:
@@ -240,7 +240,7 @@ jobs:
       - terraform_matrix
     strategy:
       matrix:
-        tf_dir: ${{needs.terraform_matrix.outputs.tf_matrix}}  
+        tf_dir: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     outputs:
       terraform_plan_exitcode: ${{ steps.tf_plan.outputs.terraform_plan_exitcode }}
     steps:
