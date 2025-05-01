@@ -163,8 +163,9 @@ jobs:
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
             found=$(echo "find -type d -name tests*")
+            echo "found is $found"
             if [[ -n ${found} ]]; then
-              source ../venv/bin/activate
+              source ./venv/bin/activate
               pwd
 
               python -m unittest discover . --junitxml=reports/report.xml -s
