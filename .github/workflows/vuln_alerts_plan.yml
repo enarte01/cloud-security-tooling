@@ -233,7 +233,7 @@ jobs:
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform Plan"
     runs-on: ubuntu-latest
-    concurrency: vuln-alerts
+    concurrency: vuln-alerts-plan
     needs:
       - prerequisites
       - code_scan
