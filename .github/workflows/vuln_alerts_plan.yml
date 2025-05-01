@@ -151,7 +151,6 @@ jobs:
       #read black, bandit
       - name: Lint with Black
         run: |
-          cd app
           for module_directory in "${APP_MODULES[@]}"; do
             black apps/lambda/${module_directory}/* --check --diff
           done
