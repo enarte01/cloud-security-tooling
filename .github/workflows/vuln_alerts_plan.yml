@@ -159,11 +159,12 @@ jobs:
       #change test to unittest
       #create a test runner instead
         run: |
+          echo "The length of changed apps is ${#${{ needs.prerequisites.outputs.changed_apps}}[0]}"
           IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps}}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
             found=$(echo "find -type d -name tests*")
-            if [[-n ${found} ]]; then
+            if [[ -n ${found} ]]; then
               source ../venv/bin/activate
               pwd
 
