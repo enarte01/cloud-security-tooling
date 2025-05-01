@@ -222,10 +222,13 @@ jobs:
       - name: Tf matrix
         id: tf_matrix
         run: |
-          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
-          echo "[${APP_MODULES[@]}]"
-          echo "[${{  needs.prerequisites.outputs.changed_apps }}]"
-          echo "matrix={'tf_dir':['${APP_MODULES[@]}']}" >> "$GITHUB_OUTPUT"
+          IFS=',' read -ra TF_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
+          tf_files=()
+          for module in "${TF_MODULES[@]}"; do
+            module=${module//_/-}
+            tf_files+=($module)
+          echo "[${tf_files[@]}]"
+          echo "matrix={'tf_dir':['${tf_files[@]}']}" >> "$GITHUB_OUTPUT"
 
 
   terraform_plan:
