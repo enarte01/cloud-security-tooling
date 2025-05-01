@@ -77,10 +77,6 @@ variable "ephemeral_storage" {
 variable "layers" {
   type = list(string)
   default = []
-  validation {
-    condition = var.layers != [] && var.create_layer
-    error_message = "value"
-  }
 }
 variable "tags" {
   type = map(string)
