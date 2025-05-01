@@ -257,8 +257,8 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
-          role-to-assume: ${{ secrets.AWS_GH_ROLE}}
-          role-duration-seconds: 600
+          role-to-assume: ${{ secrets.AWS_GH_ROLE }}
+          role-duration-seconds: 900
           role-session-name: tfghIACSessionName
       - name: Terraform Plan
         id: tf_plan
