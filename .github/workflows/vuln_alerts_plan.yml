@@ -90,7 +90,6 @@ jobs:
             echo "${#changed_files[@]}"
             echo "changed_tf_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
 
- #TODO read precommit it again 
   pre-commit:
     name: "Pre-commit"
     runs-on: ubuntu-latest
@@ -252,14 +251,14 @@ jobs:
       #for each changed folder in terraform/apps/lambda/**, ttf plan
       - name: AWS login
         id: aws_login
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.AWS_GH_ROLE }}
           role-duration-seconds: 900
-          role-session-name: tfghIACSessionName
+          role-session-name: tfghIACSession
       - name: Terraform Plan
         id: tf_plan
         uses: ./.github/actions/tf_run

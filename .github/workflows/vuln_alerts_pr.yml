@@ -17,9 +17,9 @@ env:
   TARGET_DIR: terraform/apps/lambda
   APP_DIR: apps/lambda
   TF_VERSION: 1.6.6
-  AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
   TF_BUCKET:
   TF_DYNAMO_DB:
+  ENV: portfolio-dev
 
 permissions:
   id-token: write
@@ -40,21 +40,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: file changes fuction
-        id: file_changes_function
-        run: |
-          file_changes(){
-            changed_files=()
-            for file_changed in $1; do
-              echo "the changed file is $file_changed"
-              file=$(echo "$file_changed" | cut -d $2 -f $3)
-              echo "${changed_files[@]}" | grep -w "$file" || {
-                changed_files+=($file)
-              }
-            done
-            changed_files=$(IFS=, ; echo "${changed_files[*]}")
-            return changed_files
-            }
       - uses: dorny/paths-filter@v3
         id: changed_app_files
         with:
@@ -65,10 +50,19 @@ jobs:
       - name: changed appps
         id: changed_apps
         run: |
-            $file_changes $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}"  '/' 3)
-            echo "print output $?"
-            echo "changed_apps=$?" >> "$GITHUB_OUTPUT"
-            echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
+            changed_files=()
+            for file_changed in $(echo "${{ steps.changed_app_files.outputs.app_changes_files }}"); do
+              echo $file_changed
+              file=$(echo "$file_changed" | cut -d '/' -f 3)
+              echo "${changed_files[@]}" | grep -w "$file" || {
+                changed_files+=($file)
+              }
+            done
+            changed_files=$(IFS=, ; echo "${changed_files[*]}")
+            echo "The changed files are ${changed_files}"
+            echo "changed_apps=$changed_files" >> "$GITHUB_OUTPUT"
+            echo "${#changed_files[@]}"
+            echo "changed_apps_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
         id: changed_tf_files
@@ -80,10 +74,20 @@ jobs:
       - name: changed tf files
         id: changed_tf
         run: |
-            file_changes $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }} '/' 3")
-            echo "changed_tf=$?" >> "$GITHUB_OUTPUT"
-            echo "changed_tf_count=${{ steps.changed_tf_files.outputs.tf_changes_count }}" >> "$GITHUB_OUTPUT"
- #read precommit it again 
+            changed_files=()
+            for file_changed in $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}"); do
+              echo $file_changed
+              file=$(echo "$file_changed" | cut -d '/' -f 3)
+              echo "${changed_files[@]}" | grep -w "$file" || {
+                changed_files+=($file)
+              }
+            done
+            changed_files=$(IFS=, ; echo "${changed_files[*]}")
+            echo "The changed files are ${changed_files}"
+            echo "changed_tf=$changed_files" >> "$GITHUB_OUTPUT"
+            echo "${#changed_files[@]}"
+            echo "changed_tf_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
+
   pre-commit:
     name: "Pre-commit"
     runs-on: ubuntu-latest
@@ -103,9 +107,8 @@ jobs:
     strategy:
       matrix:
         python-version: [ "3.11", "3.12" ]
-    needs:
+    needs: 
       - prerequisites
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -120,7 +123,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install black pytest
 
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
+          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
 
@@ -130,6 +133,7 @@ jobs:
             source venv/bin/activate
 
             if [[ -f requirements.txt ]]; then
+              pip install --upgrade pip
               pip install -r requirements.txt
             fi
 
@@ -144,7 +148,6 @@ jobs:
       #read black, bandit
       - name: Lint with Black
         run: |
-          cd app
           for module_directory in "${APP_MODULES[@]}"; do
             black apps/lambda/${module_directory}/* --check --diff
           done
@@ -153,12 +156,13 @@ jobs:
       #change test to unittest
       #create a test runner instead
         run: |
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps}}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
-            found=echo "find -type d -name tests*"
-            if [[-n ${found} ]]; then
-              source ../venv/bin/activate
+            found=$(find -type d -name tests*)
+            echo "found is $found"
+            if [[ -n ${found} ]]; then
+              source ./venv/bin/activate
               pwd
 
               python -m unittest discover . --junitxml=reports/report.xml -s
@@ -179,91 +183,12 @@ jobs:
           fail-on-error: 'false'
           fail-on-empty: 'false'
           use-actions-summary: 'true'
-  #TODO for each requirement file, 
-  #check if changed since last commit
-  #create a package and upload to layer
-  lambda_packaging_dev:
-  #TODO
-  #package src code and upload to s3
-  #package dependency libraries and upload to layer
-    name: "Lambda Dev Packaging"
-    runs-on: ubuntu-latest
-    concurrency: audit-Dev
-    needs:
-      - prerequisites
-      - app_tests
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: eu-west-1
-          role-to-assume: ${{ env.AWS_GH_ROLE }}
-          role-session-name: LambdaPackagingJob
-
-      - name: Package Audit Lambda Code
-        id: lambda_packaging
-        run: |
-          export LAMBDA_S3_BUCKET="{{ env.APP_NAME }}-{{ env.PROJECT_NAME }}-s3-bucket-{{ env.ENV }}"
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
-          for module_directory in "${APP_MODULES[@]}"; do
-            module=${module_directory//_/-}
-
-            zip_name="{{ env.APP_NAME }}-{{ env.PROJECT_NAME }}-${module}.zip"
-            echo " ${zip_name} in apps/lambda/${module_directory}"
-            if [ ! -d "apps/lambda/${module_directory}" ]; then
-              echo "Skipping packaging for ${module_directory}"
-              continue
-            fi
-            pushd apps/lambda/${module_directory}
-
-            if [[ -f requirements.txt ]]; then # and if the file changed since last commit
-              if [[ ${ echo "git diff --exit-code requirements.txt" } == 1 ]]; then
-              echo "create lambda layer zip file"
-              pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/python3.12/site-packages
-              mkdir python
-              cp -r lambda_layer/lib python/
-              zip -r ${zip_name} python
-              layerversionarn= ${jq -r '.LayerVersionArn' {aws lambda publish-layer-version --layer-name ${module}-layer \
-                --zip-file fileb://${zip_name} \
-                --compatible-runtimes python3.11 python3.12 \
-                --compatible-architectures "x86_64" "arm64"}}
-              echo "The layer arn of ${module} is ${layerversionarn}"
-              #link layer to lambda
-             
-              ${echo "aws lambda update-function-configuration --function-name arn:aws:lambda:${env.REGION}:${env.ACCOUNT_ID}:function:${module} \
-                  --layers $layerversionarn"}
-              fi
-            fi
-            #TODO
-            #package source code
-            #if the app does not use layer then package dependencies with src code
-
-            mkdir dist
-            cp -r ./!(*.md|*.xlsx|*.txt) dist/
-
-            pushd dist
-
-            zip -r ${zip_name} *
-            echo "Uploading zip to ${LAMBDA_S3_BUCKET}"
-            aws s3api put-object --bucket ${LAMBDA_S3_BUCKET} --key $zip_name --body $zip_name
-
-            popd
-            popd
-          done
-  
   terraform_plan_dev:
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform Plan Dev"
     runs-on: ubuntu-latest
-    concurrency: audit-Dev
+    concurrency: vuln-alerts
     strategy:
       matrix:
         tf_dir: ${{needs.prerequisites.outputs.changed_tf}}
@@ -274,12 +199,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: AWS login
+        id: aws_login
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.AWS_GH_ROLE }}
+          role-duration-seconds: 900
+          role-session-name: tfghIACSession
       #remove env action: use app meta data values
       - name: Terraform Plan
         id: tf_plan
         uses: ./.github/terraform_run
         with:
-          aws_role: ${{ env.AWS_GH_ROLE }}
           terraform_action: 'plan'
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
@@ -289,7 +223,7 @@ jobs:
   terraform_apply_dev:
     name: "Terraform Apply Dev"
     runs-on: ubuntu-latest
-    concurrency: audit-Dev
+    concurrency: vuln-alerts
     if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
 
     needs:
@@ -298,15 +232,113 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: AWS login
+        id: aws_login
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.AWS_GH_ROLE }}
+          role-duration-seconds: 900
+          role-session-name: tfghIACSession
 
-      - name: Terraform Apply
+      - name: Terraform Apply dev
         id: tf_apply
         uses: ./.github/terraform_run
         with:
-          aws_role: ${{ env.AWS_GH_ROLE }}
           terraform_action: 'apply'
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
           tf_working_dir: ${{ env.TARGET_DIR }}
-
+#TODO for each requirement file, 
+#check if changed since last commit
+#create a package and upload to layer  
+  lambda_packaging_dev:
+    #TODO
+    #package src code and upload to s3
+    #package dependency libraries and upload to layer
+      name: "Lambda Dev Packaging"
+      runs-on: ubuntu-latest
+      concurrency: vuln-alerts
+      env:
+        PYTHON_VERSION: 3.12
+        ACCOUNT_ID: ${{secrets.ACCOUNT_ID}}
+        REGION: eu-west-2
+      needs:
+        - prerequisites
+        - app_tests
+        - terraform_apply_dev
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+  
+        - name: Set up Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: 3.12
+  
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-session-name: LambdaPackagingJSession
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: eu-west-2
+            role-to-assume: ${{ secrets.AWS_GH_ROLE }}
+            role-duration-seconds: 900
+  
+        - name: Package Audit Lambda Code
+          id: lambda_packaging
+          run: |
+            
+            IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
+            for module_directory in "${APP_MODULES[@]}"; do
+              if [ ! -d "apps/lambda/${module_directory}" ]; then
+                echo "Skipping packaging for ${module_directory}"
+                continue
+              fi
+              module=${module_directory//_/-}
+              S3_BUCKET=${jq -r .s3_bucket app-data.json}
+              PROJECT_NAME=${jq -r .project_name app-data.json}
+              LAMBDA_LAYER=${jq -r .lambda_layer app-data.json}
+  
+              echo zip_name="${ module }-${PROJECT_NAME }-${{env.ENV}}.zip"
+              echo " ${zip_name} in apps/lambda/${module_directory}"
+  
+              pushd apps/lambda/${module_directory}
+  
+              if [[ -f requirements.txt ]]; then 
+                if [[ ${ echo "git diff --exit-code requirements.txt" } == 1 ]]; then
+                echo "create lambda layer zip file"
+                pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
+                mkdir python
+                cp -r lambda_layer/lib python/
+                zip -r ${zip_name} python
+                layerversionarn= ${jq -r '.LayerVersionArn' {aws lambda publish-layer-version --layer-name ${LAYER_NAME} \
+                  --zip-file fileb://${zip_name} \
+                  --compatible-runtimes ${{env.PYTHON_VERSION}} \
+                  --compatible-architectures "x86_64" "arm64"}}
+                echo "The layer arn of ${module} is ${layerversionarn}"
+                #link layer to lambda
+                
+                aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
+                    --layers $layerversionarn
+                fi
+              fi
+  
+              mkdir dist
+              cp -r ./!(*.md|*.xlsx|*.txt) dist/
+  
+              pushd dist
+  
+              zip -r ${zip_name} *
+              echo "Uploading zip to ${S3_BUCKET}"
+              aws s3api put-object --bucket ${S3_BUCKET} --key $zip_name --body $zip_name
+  
+              popd
+              popd
+            done
+#TODO
+#if the app does not use layer then package dependencies with src code
