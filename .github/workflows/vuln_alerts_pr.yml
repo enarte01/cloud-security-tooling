@@ -236,7 +236,7 @@ jobs:
       #remove env action: use app meta data values
       - name: Terraform Plan
         id: tf_plan
-        uses: ./.github/terraform_run
+        uses: ./.github/actions/tf_run
         with:
           terraform_action: 'plan'
           terraform_version: ${{ env.TF_VERSION }}
@@ -270,7 +270,7 @@ jobs:
 
       - name: Terraform Apply dev
         id: tf_apply
-        uses: ./.github/terraform_run
+        uses: ./.github/actions/tf_run
         with:
           terraform_action: 'plan'
           terraform_version: ${{ env.TF_VERSION }}
