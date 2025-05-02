@@ -351,12 +351,12 @@ jobs:
               mkdir dist
               shopt -s extglob
               pwd
-              $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png|__init__.py|README.md) dist/")
+              $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png) dist/")
               shopt -u extglob
               ls dist/
               pushd dist
                 
-              zip ${zip_name} *
+              zip -r --compression-method=store ${zip_name} *
               echo "Uploading zip to ${S3_BUCKET}"
               aws s3api put-object --bucket ${S3_BUCKET} --key $zip_name --body $zip_name
   
