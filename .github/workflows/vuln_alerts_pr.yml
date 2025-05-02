@@ -242,7 +242,7 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
-          tf_working_dir: ${{ matrix.tf_dir }}
+          tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
   
   terraform_apply_dev:
     name: "Terraform Apply Dev"
@@ -276,7 +276,7 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
-          tf_working_dir: ${{ matrix.tf_dir}}
+          tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir}}
 #TODO for each requirement file, 
 #check if changed since last commit
 #create a package and upload to layer  
