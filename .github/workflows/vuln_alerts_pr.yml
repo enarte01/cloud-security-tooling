@@ -213,7 +213,6 @@ jobs:
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform Plan Dev"
     runs-on: ubuntu-latest
-    concurrency: vuln-alerts
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     needs:
