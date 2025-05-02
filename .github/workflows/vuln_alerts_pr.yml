@@ -349,6 +349,7 @@ jobs:
                 fi
               fi
               mkdir dist
+              pwd
               cp -r . dist/
               pushd dist
   
