@@ -356,10 +356,10 @@ jobs:
               ls dist/
               pushd dist
                 
-              zip  -r ${zip_name} *
+              zip  -r dist.zip *
               echo "Uploading zip to ${S3_BUCKET}"
               aws --version
-              aws s3api put-object --bucket my-bucket-test --key dist.zp --body $zip_name
+              aws s3api put-object --bucket my-bucket-test --key dist.zp --body dist.zip
               popd
               popd
             done
