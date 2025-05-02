@@ -360,7 +360,7 @@ jobs:
               echo "Uploading zip to ${S3_BUCKET}"
               aws --version
               aws sts get-caller-identity
-              aws s3api put-object --bucket porfolio123433 --key dist.zp --body dist.zip
+              aws s3api put-object --bucket porfoliobucket123433 --key dist.zp --body dist.zip
               popd
               popd
             done
