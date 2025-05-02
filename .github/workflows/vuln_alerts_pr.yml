@@ -354,7 +354,7 @@ jobs:
               $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png|__init__.py|README.md) dist/")
               shopt -u extglob
               ls dist/
-              pushd
+              pushd dist
                 
               zip ${zip_name} *
               echo "Uploading zip to ${S3_BUCKET}"
