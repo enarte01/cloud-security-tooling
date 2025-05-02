@@ -349,9 +349,9 @@ jobs:
                 fi
               fi
               mkdir dist
-              shopt -s nullglob
-              cp -r ./^*.{md,xlsx,txt} dist/
-              shopt -u nullglob
+              shopt -s extglob
+              cp -r ./ ! (*.md|*.xlsx|*.txt) dist/
+              shopt -u extglob
 
   
               pushd dist
