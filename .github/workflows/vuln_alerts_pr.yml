@@ -349,11 +349,7 @@ jobs:
                 fi
               fi
               mkdir dist
-              shopt -s extglob
-              $(echo "cp -r ./'!(*.md|*.xlsx|*.txt)' dist/")
-              shopt -u extglob
-
-  
+              cp -r . dist/
               pushd dist
   
               zip -r ${zip_name} *
