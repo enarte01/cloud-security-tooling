@@ -351,7 +351,7 @@ jobs:
               fi
   
               mkdir dist
-              cp -r ./!("*.md"|"*.xlsx"|"*.txt") dist/
+
   
               pushd dist
   
@@ -363,4 +363,5 @@ jobs:
               popd
             done
 #TODO
+#              cp -r ./!("*.md"|"*.xlsx"|"*.txt") dist/
 #if the app does not use layer then package dependencies with src code
