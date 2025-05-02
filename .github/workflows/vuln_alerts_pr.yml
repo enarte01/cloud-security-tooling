@@ -349,9 +349,9 @@ jobs:
                     --layers $layerversionarn
                 fi
               fi
-  
+              shopt -s extglob
               mkdir dist
-              cp -r ./^*.md|*.xlsx|*.txt dist/
+              cp -r ./!(*.md|*.xlsx|*.txt) dist/
 
   
               pushd dist
