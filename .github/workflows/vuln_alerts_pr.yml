@@ -313,7 +313,7 @@ jobs:
             role-to-assume: ${{ secrets.AWS_GH_ROLE }}
             role-duration-seconds: 900
   
-        - name: Package Audit Lambda Code
+        - name: Package Lambda and layer
           id: lambda_packaging
           run: |
             
