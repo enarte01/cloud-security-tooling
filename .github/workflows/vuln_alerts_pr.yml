@@ -365,6 +365,7 @@ jobs:
                 
               zip  -r ${zip_name} *
               echo "Uploading zip to ${S3_BUCKET}"
+              aws --version
               aws s3api put-object --bucket ${S3_BUCKET} --key $zip_name --body $zip_name
               popd
               popd
