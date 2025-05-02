@@ -354,13 +354,11 @@ jobs:
               $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png) dist/")
               shopt -u extglob
               ls dist/
-              pushd dist
                 
-              zip -r --compression-method=store ${zip_name} *
+              zip -r  ${zip_name} dist/
               echo "Uploading zip to ${S3_BUCKET}"
               aws s3api put-object --bucket ${S3_BUCKET} --key $zip_name --body $zip_name
-  
-              popd
+
               popd
             done
 #TODO
