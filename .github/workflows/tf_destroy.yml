@@ -30,7 +30,7 @@ jobs:
 
       - name: Terraform Plan
         id: tf_destroy
-        uses: .github/workflows/actions/terraform_run
+        uses: ./.github/workflows/actions/tf_run
         with:
           aws_role: ${{ env.AWS_GH_ROLE }}
           terraform_action: 'destroy'
