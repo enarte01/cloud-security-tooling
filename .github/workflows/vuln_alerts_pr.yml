@@ -350,7 +350,7 @@ jobs:
               fi
               mkdir dist
               shopt -s extglob
-              cp  ./!(*.md|*.xlsx|*.txt) dist/
+              cp -r ./!*.md|*.xlsx|*.txt dist/
               shopt -u extglob
 
   
