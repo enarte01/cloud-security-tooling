@@ -359,6 +359,7 @@ jobs:
               zip  -r dist.zip *
               echo "Uploading zip to ${S3_BUCKET}"
               aws --version
+              aws sts get-caller-identity
               aws s3api put-object --bucket my-bucket-test --key dist.zp --body dist.zip
               popd
               popd
