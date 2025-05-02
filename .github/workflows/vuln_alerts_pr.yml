@@ -345,8 +345,6 @@ jobs:
                   --compatible-runtimes ${{env.PYTHON_VERSION}} \
                   --compatible-architectures "x86_64" "arm64"}}
                 echo "The layer arn of ${module} is ${layerversionarn}"
-                #link layer to lambda
-                
                 aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
                     --layers $layerversionarn
                 fi
