@@ -286,7 +286,6 @@ jobs:
     #package dependency libraries and upload to layer
       name: "Lambda Dev Packaging"
       runs-on: ubuntu-latest
-      concurrency: vuln-alerts
       env:
         PYTHON_VERSION: 3.12
         ACCOUNT_ID: ${{secrets.ACCOUNT_ID}}
