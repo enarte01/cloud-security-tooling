@@ -351,6 +351,7 @@ jobs:
               fi
   
               mkdir dist
+              cp -r ./! (*.md|*.xlsx|*.txt) dist/
 
   
               pushd dist
