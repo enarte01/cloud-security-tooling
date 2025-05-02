@@ -324,7 +324,7 @@ jobs:
                 continue
               fi
               module=${module_directory//_/-}
-              S3_BUCKET=${jq -r .s3_bucket app-data.json}
+              S3_BUCKET=$(jq -r .s3_bucket app-data.json)
               PROJECT_NAME=${jq -r .project_name app-data.json}
               LAMBDA_LAYER=${jq -r .lambda_layer app-data.json}
   
