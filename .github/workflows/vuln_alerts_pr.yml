@@ -248,7 +248,6 @@ jobs:
   terraform_apply_dev:
     name: "Terraform Apply Dev"
     runs-on: ubuntu-latest
-    concurrency: vuln-alerts
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
@@ -274,7 +273,7 @@ jobs:
         id: tf_apply
         uses: ./.github/terraform_run
         with:
-          terraform_action: 'apply'
+          terraform_action: 'plan'
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
