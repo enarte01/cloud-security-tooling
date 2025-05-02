@@ -1,5 +1,5 @@
 {
     "s3_bucket": "arn:aws:s3:eu-west-2:853038574953:bucket:my-lambda-bucket",
     "lambda_layer": "arn:aws:lambda:eu-west-2:853038574953:layer:vuln_alert-response-lambda",
-    "project_name": "portfolio-dev"
+    "project_name": "portfolio"
 }
