@@ -1,4 +1,4 @@
-
+name: main prod
 on:
   #push:
   #  branches:
@@ -97,10 +97,10 @@ jobs:
 
       - name: Pre-commit
         id: pre-commit
-        uses: ./.github/workflows/actions/pre_commit
+        uses: ./.github/actions/pre_commit
         with:
           terraform_version: ${{ env.TF_VERSION }}
-  
+
   app_tests:
     name: "Lambda Tests"
     runs-on: ubuntu-latest
@@ -109,7 +109,6 @@ jobs:
         python-version: [ "3.11", "3.12" ]
     needs: 
       - prerequisites
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -124,7 +123,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install black pytest
 
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
+          IFS=',' read -ra APP_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
 
@@ -134,6 +133,7 @@ jobs:
             source venv/bin/activate
 
             if [[ -f requirements.txt ]]; then
+              pip install --upgrade pip
               pip install -r requirements.txt
             fi
 
@@ -148,7 +148,6 @@ jobs:
       #read black, bandit
       - name: Lint with Black
         run: |
-          cd app
           for module_directory in "${APP_MODULES[@]}"; do
             black apps/lambda/${module_directory}/* --check --diff
           done
@@ -157,12 +156,13 @@ jobs:
       #change test to unittest
       #create a test runner instead
         run: |
-          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
+          IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps}}"
           for module_directory in "${APP_MODULES[@]}"; do
             pushd apps/lambda/${module_directory}
-            found=echo "find -type d -name tests*"
-            if [[-n ${found} ]]; then
-              source ../venv/bin/activate
+            found=$(find -type d -name tests*)
+            echo "found is $found"
+            if [[ -n ${found} ]]; then
+              source ./venv/bin/activate
               pwd
 
               python -m unittest discover . --junitxml=reports/report.xml -s
@@ -244,7 +244,7 @@ jobs:
           tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
   
   terraform_apply_prod:
-    name: "Terraform Apply Dev"
+    name: "Terraform Apply prod"
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
