@@ -350,9 +350,6 @@ jobs:
                 fi
               fi
               mkdir dist
-              rm ${zip_name}
-              rm -r python
-              rm -r lambda_layer
               shopt -s extglob
               pwd
               $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png|__init__.py|*.zip|python*|lambda_layer*) dist/")
