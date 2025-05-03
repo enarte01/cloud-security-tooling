@@ -338,6 +338,7 @@ jobs:
                 pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
                 mkdir python
                 cp -r lambda_layer/lib python/
+                echo ${zip_name}
                 zip -r ${zip_name} python
                 layerversionarn= ${jq -r '.LayerVersionArn' {aws lambda publish-layer-version --layer-name ${LAYER_NAME} \
                   --zip-file fileb://${zip_name} \
