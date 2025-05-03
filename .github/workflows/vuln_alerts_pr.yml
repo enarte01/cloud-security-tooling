@@ -342,8 +342,8 @@ jobs:
                 zip -r "${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" python
                 layerversionarn=$($(echo "aws lambda publish-layer-version --layer-name ${LAMBDA_LAYER} \
                   --zip-file fileb://${zip_name} \
-                  --compatible-runtimes ${{ env.PYTHON_VERSION }} \
-                  --compatible-architectures [x86_64, arm64]") | jq -r '.LayerVersionArn')
+                  --compatible-runtimes python${{ env.PYTHON_VERSION }} \
+                  --compatible-architectures x86_64 arm64") | jq -r '.LayerVersionArn')
                 echo "The layer arn of ${module} is ${layerversionarn}"
                 aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
                     --layers $layerversionarn
