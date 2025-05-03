@@ -331,6 +331,7 @@ jobs:
               echo zip_name="${module}-${PROJECT_NAME}-${{env.ENV}}.zip"
               echo "${zip_name} in apps/lambda/${module_directory}"
               git fetch --depth=3
+              echo "checking for file change"
               changed=$(git diff --name-only HEAD^ HEAD requirements.txt)
               if [[ -f requirements.txt ]]; then 
                 if [[ $changed == "apps/lambda/vuln_alert_response_lambda/requirements.txt" ]]; then
