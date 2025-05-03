@@ -281,7 +281,10 @@ jobs:
   lambda_packaging_prod:
     name: "Lambda prod Packaging"
     runs-on: ubuntu-latest
-    concurrency: audit-Dev
+    env:
+      PYTHON_VERSION: 3.12
+      ACCOUNT_ID: ${{secrets.ACCOUNT_ID}}
+      REGION: eu-west-2
     needs:
       - prerequisites
       - app_tests
