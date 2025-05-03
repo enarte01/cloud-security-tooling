@@ -339,7 +339,7 @@ jobs:
                 mkdir python
                 cp -r lambda_layer/lib python/
                 echo "the zip name ${zip_name}"
-                zip -r "${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" python
+                zip -r ${zip_name} python
                 layerversionarn=$($(echo "aws lambda publish-layer-version --layer-name ${LAMBDA_LAYER} \
                   --zip-file fileb://${zip_name} \
                   --compatible-runtimes python${{ env.PYTHON_VERSION }} \
@@ -357,11 +357,9 @@ jobs:
               ls dist/
               pushd dist
                 
-              zip  -r dist.zip *
+              zip  -r ${zip_name} *
               echo "Uploading zip to ${S3_BUCKET}"
-              aws --version
-              aws sts get-caller-identity
-              aws s3api put-object --bucket portfoliobucket123433 --key dist.zp --body dist.zip
+              aws s3api put-object --bucket ${S3_BUCKET} --key ${zip_name} --body ${zip_name}
               popd
               popd
             done
