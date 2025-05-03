@@ -325,7 +325,7 @@ jobs:
               fi  
               pushd apps/lambda/${module_directory}
               module=${module_directory//_/-}
-              S3_BUCKET=$(echo "jq -r '.s3_bucket' app-metadata.json")
+              S3_BUCKET=$(echo "$(jq -r '.s3_bucket' app-metadata.json)")
               PROJECT_NAME=$(echo "jq -r '.project_name' app-metadata.json")
               echo LAMBDA_LAYER="$(jq '.lambda_layer' app-metadata.json)"
               echo zip_name="${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" >> "GITHUB_ENV"
