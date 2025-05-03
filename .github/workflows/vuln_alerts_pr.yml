@@ -328,7 +328,7 @@ jobs:
               S3_BUCKET=$(jq -r .s3_bucket app-metadata.json)
               PROJECT_NAME=$(jq -r .project_name app-metadata.json)
               LAMBDA_LAYER=$(jq -r .lambda_layer app-metadata.json)
-  
+              $(echo "git diff --name-only HEAD ^ HEAD requirements.txt")
               echo zip_name="${module}-${PROJECT_NAME}-${{env.ENV}}.zip"
               echo "${zip_name} in apps/lambda/${module_directory}"
               if [[ -f requirements.txt ]]; then 
