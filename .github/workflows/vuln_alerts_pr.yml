@@ -356,9 +356,9 @@ jobs:
               pushd dist
               shopt -s extglob
               pwd
-              $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip) dist/")
+              $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip) .")
               shopt -u extglob
-              ls dist/
+              ls .
           
               zip  -r ${zip_name} *
               echo "Uploading zip to ${S3_BUCKET}"
