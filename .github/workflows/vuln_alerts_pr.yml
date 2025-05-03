@@ -356,7 +356,7 @@ jobs:
               pushd dist
               shopt -s extglob
               pwd
-              $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip) .")
+              $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip|dist*) .")
               shopt -u extglob
               ls .
           
