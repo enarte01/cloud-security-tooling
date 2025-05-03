@@ -325,11 +325,11 @@ jobs:
               fi  
               pushd apps/lambda/${module_directory}
               module=${module_directory//_/-}
-              S3_BUCKET=$(jq -r .s3_bucket app-metadata.json)
-              PROJECT_NAME=$(jq -r .project_name app-metadata.json)
-              LAMBDA_LAYER=$(jq -r .lambda_layer app-metadata.json)
-              echo zip_name="${module}-${PROJECT_NAME}-${{env.ENV}}.zip"
-              echo "${zip_name} in apps/lambda/${module_directory}"
+              echo "S3_BUCKET=$(jq -r .s3_bucket app-metadata.json)" >> "$GITHUB_OUTPUT"
+              echo "PROJECT_NAME=$(jq -r .project_name app-metadata.json)" >> "$GITHUB_OUTPUT"
+              echo "LAMBDA_LAYER=$(jq -r .lambda_layer app-metadata.json)" >> "$GITHUB_OUTPUT"
+              echo "zip_name=${module}-${PROJECT_NAME}-${{env.ENV}}.zip" >> "$GITHUB_OUTPUT"
+              echo "${env.zip_name} in apps/lambda/${module_directory}"
               git fetch --depth=3
               changed=$(git diff --name-only HEAD^ HEAD requirements.txt)
               if [[ -f requirements.txt ]]; then 
@@ -338,10 +338,10 @@ jobs:
                 pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
                 mkdir python
                 cp -r lambda_layer/lib python/
-                echo "the zip name $LAYER_NAME"
+                echo "the zip name ${env.LAYER_NAME}"
                 zip -r "${module}-${PROJECT_NAME}-${{env.ENV}}.zip" python
-                layerversionarn=$($(echo "aws lambda publish-layer-version --layer-name ${LAYER_NAME} \
-                  --zip-file fileb://${zip_name} \
+                layerversionarn=$($(echo "aws lambda publish-layer-version --layer-name ${env.LAYER_NAME} \
+                  --zip-file fileb://${env.zip_name} \
                   --compatible-runtimes ${{env.PYTHON_VERSION}} \
                   --compatible-architectures 'x86_64' 'arm64'") | jq -r '.LayerVersionArn')
                 echo "The layer arn of ${module} is ${layerversionarn}"
