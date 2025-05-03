@@ -325,10 +325,10 @@ jobs:
               fi  
               pushd apps/lambda/${module_directory}
               module=${module_directory//_/-}
-              echo "S3_BUCKET=$(jq -r .s3_bucket app-metadata.json)" >> "$GITHUB_ENV"
-              echo "PROJECT_NAME=$(jq -r .project_name app-metadata.json)" >> "$GITHUB_ENV"
-              echo "LAMBDA_LAYER=$(jq -r .lambda_layer app-metadata.json)" >> "$GITHUB_ENV"
-              echo "zip_name=${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" >> "$GITHUB_ENV"
+              S3_BUCKET=$(jq -r '.s3_bucket' app-metadata.json)
+              PROJECT_NAME=$(jq -r '.project_name' app-metadata.json)
+              LAMBDA_LAYER=$(jq -r '.lambda_layer' app-metadata.json)
+              zip_name="${module}-${PROJECT_NAME}-${{ env.ENV }}.zip"
               echo "$zip_name in apps/lambda/${module_directory}"
               git fetch --depth=3
               changed=$(git diff --name-only HEAD^ HEAD requirements.txt)
