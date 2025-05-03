@@ -355,7 +355,7 @@ jobs:
               mkdir dist
               shopt -s extglob
               pwd
-              $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png|__init__.py|*.zip|python*|lambda_layer*) dist/")
+              $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png|__init__.py|*.zip) dist/")
               shopt -u extglob
               ls dist/
               pushd dist
