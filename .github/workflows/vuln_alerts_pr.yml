@@ -340,10 +340,10 @@ jobs:
                 cp -r lambda_layer/lib python/
                 echo "the zip name ${module}-${PROJECT_NAME}-${{env.ENV}}.zip"
                 zip -r "${module}-${PROJECT_NAME}-${{env.ENV}}.zip" python
-                layerversionarn=$(jq -r '.LayerVersionArn' << $(echo "aws lambda publish-layer-version --layer-name ${LAYER_NAME} \
+                layerversionarn=$($(echo "aws lambda publish-layer-version --layer-name ${LAYER_NAME} \
                   --zip-file fileb://${zip_name} \
                   --compatible-runtimes ${{env.PYTHON_VERSION}} \
-                  --compatible-architectures 'x86_64' 'arm64'"))
+                  --compatible-architectures 'x86_64' 'arm64'") | jq -r '.LayerVersionArn')
                 echo "The layer arn of ${module} is ${layerversionarn}"
                 aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
                     --layers $layerversionarn
