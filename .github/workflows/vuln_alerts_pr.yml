@@ -333,7 +333,7 @@ jobs:
               echo " ${zip_name} in apps/lambda/${module_directory}"
   
               if [[ -f requirements.txt ]]; then 
-                if [[ $(echo "git diff --exit-code HEAD^ HEAD requirements.txt") ]]; then
+                if [[ $(echo "git diff --exit-code HEAD^ HEAD requirements.txt") != ""]]; then
                 echo "create lambda layer zip file"
                 pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
                 mkdir python
