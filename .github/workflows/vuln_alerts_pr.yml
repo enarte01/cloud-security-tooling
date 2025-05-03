@@ -335,7 +335,7 @@ jobs:
               if [[ -f requirements.txt ]]; then 
                 if [[ $changed != apps/lambda/vuln_alert_response_lambda/requirements.txt ]]; then
                 echo "create lambda layer zip file ${LAMBDA_LAYER}"
-                pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./#/lib/${{env.PYTHON_VERSION}}/site-packages
+                pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
                 mkdir python
                 cp -r lambda_layer/lib python/
                 echo "the zip name ${zip_name}"
@@ -347,6 +347,9 @@ jobs:
                 echo "The layer arn of ${module} is ${layerversionarn}"
                 aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
                     --layers $layerversionarn
+                rm ${zip_name}
+                rm -r python
+                rm -r lambda_layer
                 fi
               fi
               mkdir dist
