@@ -329,7 +329,7 @@ jobs:
               PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
               LAMBDA_LAYER=$(echo "$(jq -r '.lambda_layer' app-metadata.json)")
               zip_name="${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" 
-              echo "$S3_BUCKET in apps/lambda/${module_directory}"
+              echo "$zip_name in apps/lambda/${module_directory}"
               git fetch --depth=3
               changed=$(git diff --name-only HEAD^ HEAD requirements.txt)
               if [[ -f requirements.txt ]]; then 
@@ -338,12 +338,12 @@ jobs:
                 pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
                 mkdir python
                 cp -r lambda_layer/lib python/
-                echo "the zip name ${LAMBDA_LAYER}"
+                echo "the zip name ${zip_name}"
                 zip -r "${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" python
                 layerversionarn=$($(echo "aws lambda publish-layer-version --layer-name ${LAMBDA_LAYER} \
                   --zip-file fileb://${zip_name} \
                   --compatible-runtimes ${{ env.PYTHON_VERSION }} \
-                  --compatible-architectures 'x86_64' 'arm64'") | jq -r '.LayerVersionArn')
+                  --compatible-architectures [x86_64, arm64]") | jq -r '.LayerVersionArn')
                 echo "The layer arn of ${module} is ${layerversionarn}"
                 aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
                     --layers $layerversionarn
