@@ -248,7 +248,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
-    if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
+    if: ${{ needs.terraform_plan_prod.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
     needs:
       - prerequisites
       - terraform_plan_prod
