@@ -347,12 +347,13 @@ jobs:
                 echo "The layer arn of ${module} is ${layerversionarn}"
                 aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
                     --layers $layerversionarn
+                rm ${zip_name}
                 fi
               fi
               mkdir dist
               shopt -s extglob
               pwd
-              $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png|__init__.py) dist/")
+              $(echo "cp -r ./!(*.md|*.xlsx|*.txt|dist*|*.png|__init__.py|*.zip) dist/")
               shopt -u extglob
               ls dist/
               pushd dist
