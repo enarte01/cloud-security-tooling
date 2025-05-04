@@ -83,7 +83,7 @@ jobs:
             done
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
             echo "The changed files are ${changed_files[@]}"
-            echo "The changed files count is ${#changed_files[@]}"
+            echo "The changed files count is ${{ steps.changed_tf_files.outputs.tf_changes_files }}"
             echo "changed_tf=$changed_files" >> "$GITHUB_OUTPUT"
             echo "changed_tf_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
 
