@@ -6,3 +6,4 @@
 **/1stplan.json
 **/1stplan.out
 **/1stplan1.txt
+apps/lambda/vuln_alert_response_lambda/__.init__.py
