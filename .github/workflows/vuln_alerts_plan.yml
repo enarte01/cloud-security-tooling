@@ -62,10 +62,10 @@ jobs:
               }
             done
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
-            echo "The changed files are ${changed_files}"
+            echo "The changed files are ${changed_files[@]}"
+            echo "The changed files count is ${{ steps.changed_app_files.outputs.app_changes_count }}"
             echo "changed_apps=$changed_files" >> "$GITHUB_OUTPUT"
-            echo "${#changed_files[@]}"
-            echo "changed_apps_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
+            echo "changed_apps_count=${{ steps.changed_app_files.outputs.app_changes_count }}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
         id: changed_tf_files
@@ -86,10 +86,10 @@ jobs:
               }
             done
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
-            echo "The changed files are ${changed_files}"
+            echo "The changed files are ${changed_files[@]}"
+            echo "The changed files count is ${{ steps.changed_tf_files.outputs.tf_changes_count }}"
             echo "changed_tf=$changed_files" >> "$GITHUB_OUTPUT"
-            echo "${#changed_files[@]}"
-            echo "changed_tf_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
+            echo "changed_tf_count=${{ steps.changed_tf_files.outputs.tf_changes_count }}" >> "$GITHUB_OUTPUT"
 
   pre-commit:
     name: "Pre-commit"
@@ -217,7 +217,7 @@ jobs:
       - name: Tf matrix
         id: tf_matrix
         run: |
-          IFS=',' read -ra TF_MODULES <<< "${{  needs.prerequisites.outputs.changed_apps }}"
+          IFS=',' read -ra TF_MODULES <<< "${{  needs.prerequisites.outputs.changed_tf }}"
           tf_files=()
           for module in "${TF_MODULES[@]}"; do
             module=${module//_/-}
@@ -261,5 +261,5 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
-          tf_working_dir: terraform/apps/lambda/${{ matrix.tf_dir }}
+          tf_working_dir: ${{env.TARGET_DIR}}/${{ matrix.tf_dir }}
           
