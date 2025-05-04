@@ -1,5 +1,8 @@
-*/__pycache__/*
-*/.vscode/*
-*/*.drawio
-*/.terraform/*
-*/Readme_OLD.md
+**/__pycache__
+**/.vscode
+**/*.drawio
+**/.terraform**
+**/Readme_OLD.md
+**/1stplan.json
+**/1stplan.out
+**/1stplan1.txt
