@@ -3,8 +3,8 @@ name: "vuln alerts tf plan"
 
 on:
   push:
- #   branches-ignore:
- #     - "main"
+    branches-ignore:
+      - "main"
     paths:
       - "terraform/apps/lambda/**"
       - "apps/lambda/**"

@@ -1,8 +1,7 @@
 name: "PR"
 
 on:
-  #pull_request:
-  push:
+  pull_request:
     paths:
       - "terraform/apps/**"
       - "apps/lambda/**"
