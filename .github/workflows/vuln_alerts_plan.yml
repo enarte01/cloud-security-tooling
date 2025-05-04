@@ -2,16 +2,17 @@
 name: "vuln alerts tf plan"
 
 on:
-  #push:
-  #  branches-ignore:
-  #    - "main"
-  #  paths:
-  #    - "terraform/apps/lambda/**"
-  #    - "apps/lambda/**"
-  #    - ".github/workflows/vuln_alerts_plan.yaml"
-  #    - ".github/workflows/actions/tf_run.yaml"
-  #    - ".github/workflows/actions/code_scan.yaml"
-  #    - "environments/**"
+  push:
+    branches-ignore:
+      - "main"
+    paths:
+      - "terraform/apps/lambda/**"
+      - "apps/lambda/**"
+      - ".github/workflows/vuln_alerts_plan.yaml"
+      - ".github/workflows/actions/tf_run/tf_run.yaml"
+      - ".github/workflows/actions/code_scan/code_scan.yaml"
+      - ".github/workflows/actions/pre_commit/pre_commit.yaml"
+      - "environments/**"
   workflow_dispatch:
 concurrency:
   group: vuln-alerts

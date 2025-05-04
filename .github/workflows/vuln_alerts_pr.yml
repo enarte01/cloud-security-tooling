@@ -1,14 +1,15 @@
 name: "PR"
 
 on:
-  #pull_request:
-  #  paths:
-  #    - "terraform/apps/**"
-  #    - "apps/lambda/**"
-  #    - ".github/workflows/vuln_alerts_plan.yaml"
-  #    - ".github/workflows/actions/tf_run.yaml"
-  #    - ".github/workflows/actions/code_scan.yaml"
-  #    - "environments/**"
+  pull_request:
+    paths:
+      - "terraform/apps/**"
+      - "apps/lambda/**"
+      - ".github/workflows/vuln_alerts_pr.yaml"
+      - ".github/workflows/actions/tf_run/tf_run.yaml"
+      - ".github/workflows/actions/code_scan/code_scan.yaml"
+      - ".github/workflows/actions/pre_commit/pre_commit.yaml"
+      - "environments/**"
   workflow_dispatch:
 concurrency:
   group: vuln-alerts
@@ -57,9 +58,8 @@ jobs:
               }
             done
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
-            echo "The changed files are ${changed_files}"
+            echo "The changed files are ${changed_files[@]}"
             echo "changed_apps=$changed_files" >> "$GITHUB_OUTPUT"
-            echo "${#changed_files[@]}"
             echo "changed_apps_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
       
       - uses: dorny/paths-filter@v3
@@ -81,9 +81,8 @@ jobs:
               }
             done
             changed_files=$(IFS=, ; echo "${changed_files[*]}")
-            echo "The changed files are ${changed_files}"
+            echo "The changed files are ${changed_files[@]}"
             echo "changed_tf=$changed_files" >> "$GITHUB_OUTPUT"
-            echo "${#changed_files[@]}"
             echo "changed_tf_count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
 
   pre-commit:
