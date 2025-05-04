@@ -130,10 +130,8 @@ jobs:
             pushd apps/lambda/${module_directory}
 
             pwd
-
             python -m venv venv
             source venv/bin/activate
-
             if [[ -f requirements.txt ]]; then
               pip install --upgrade pip
               pip install -r requirements.txt
@@ -142,7 +140,6 @@ jobs:
             if [[ -f test-requirements.txt ]]; then
               pip install -r test-requirements.txt
             fi
-
             deactivate
 
             popd
@@ -155,6 +152,7 @@ jobs:
           done
 
       - name: Test with pytest
+      #TODO
       #change test to unittest
       #create a test runner instead
         run: |
@@ -166,7 +164,6 @@ jobs:
             if [[ -n ${found} ]]; then
               source ./venv/bin/activate
               pwd
-
               python -m unittest discover . --junitxml=reports/report.xml -s
 
               deactivate
@@ -185,7 +182,7 @@ jobs:
           fail-on-error: 'false'
           fail-on-empty: 'false'
           use-actions-summary: 'true'
-  #bandit ? yes
+
   code_scan:
     name: "Code Scan"
     runs-on: ubuntu-latest
@@ -204,13 +201,11 @@ jobs:
           scan-ref: ${{ env.TARGET_DIR }}
           python_dir: ${{ env.APP_DIR }}
           trivy_severity: 'CRITICAL'
-    #upload trivvy scan results
 
   terraform_matrix:
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform matrix"
     runs-on: ubuntu-latest
-    #concurrency: vuln-alerts
     outputs:
       tf_matrix:  ${{ steps.tf_matrix.outputs.matrix }}
     needs:
@@ -232,7 +227,6 @@ jobs:
 
 
   terraform_plan:
-  #run only if terraform/apps/lambda/** changes, then plan only the folder(s) with changes
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform Plan"
     runs-on: ubuntu-latest
@@ -248,7 +242,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      #for each changed folder in terraform/apps/lambda/**, ttf plan
       - name: AWS login
         id: aws_login
         uses: aws-actions/configure-aws-credentials@v4
