@@ -102,6 +102,7 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
   app_tests:
+    if: ${{ needs.prerequisites.outputs.changed_apps_count > 0 }}
     name: "Lambda Tests"
     runs-on: ubuntu-latest
     strategy:
@@ -275,6 +276,7 @@ jobs:
 
 
   lambda_packaging_prod:
+    if: ${{ needs.prerequisites.outputs.changed_apps_count > 0 }}
     name: "Lambda prod Packaging"
     runs-on: ubuntu-latest
     env:
