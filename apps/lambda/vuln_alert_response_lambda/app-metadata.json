@@ -1,5 +1,5 @@
 {
     "s3_bucket": "portfoliobucket123433",
-    "lambda_layer": "vuln-alert-response-lambda-layer",
+    "lambda_layer": "vuln-alert-response",
     "project_name": "portfolio"
 }

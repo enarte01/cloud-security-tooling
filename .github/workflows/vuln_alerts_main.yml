@@ -307,7 +307,7 @@ jobs:
 
       - name: Package Lambda and layer Code
         id: lambda_packaging
-        run: |
+        run: |    
             IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
             for module_directory in "${APP_MODULES[@]}"; do
               if [ ! -d "apps/lambda/${module_directory}" ]; then
@@ -315,12 +315,11 @@ jobs:
                 continue
               fi  
               pushd apps/lambda/${module_directory}
-
               module=${module_directory//_/-}
               S3_BUCKET=$(echo "$(jq -r '.s3_bucket' app-metadata.json)")
               PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
               LAMBDA_LAYER=$(echo "$(jq -r '.lambda_layer' app-metadata.json)")
-              zip_name="${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" 
+              zip_name="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
               echo "$zip_name in apps/lambda/${module_directory}"
 
               git fetch --depth=3
@@ -338,7 +337,7 @@ jobs:
                   --compatible-runtimes python${{ env.PYTHON_VERSION }} \
                   --compatible-architectures x86_64 arm64") | jq -r '.LayerVersionArn')
                 echo "The layer arn of ${module} is ${layerversionarn}"
-                aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
+                aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module}-${PROJECT_NAME}-lambda-${{env.ENV}} \
                     --layers $layerversionarn
                 rm ${zip_name}
                 rm -r python
@@ -357,5 +356,5 @@ jobs:
               aws s3api put-object --bucket ${S3_BUCKET} --key ${zip_name} --body ${zip_name}
               popd
               popd
-            done 
+            done
  

@@ -96,7 +96,7 @@ locals {
     "app-name" = "vuln-alert-response"
     "app-owner" = "EdmundN"
     "cost-centre" = "cpd-portfolio"
-    "support-team" = "cp-support"
+    "support-team" = "cpd-support"
     "org-unit" = "cpd-portfolio"
 
   }
