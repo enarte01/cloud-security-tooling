@@ -277,7 +277,6 @@ jobs:
       needs:
         - prerequisites
         - app_tests
-        - terraform_apply_dev
       steps:
         - name: Checkout
           uses: actions/checkout@v4
