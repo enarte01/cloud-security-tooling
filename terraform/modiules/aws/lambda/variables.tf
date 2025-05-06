@@ -99,3 +99,14 @@ variable "layer_name" {
 variable "compatible_runtimes" {
   type = list(string)
 }
+variable "layer_filename" {
+  type = string
+}
+variable "log_group" {
+  type = string
+
+}
+variable "s3_object_source" {
+  type = string
+  default = ""
+}

@@ -52,3 +52,11 @@ variable "bucket_acl" {
   }
   default = "private" 
 }
+variable "s3_key" {
+  type = string
+  default = ""
+}
+variable "s3_object_source" {
+  type = string
+  default = ""
+}

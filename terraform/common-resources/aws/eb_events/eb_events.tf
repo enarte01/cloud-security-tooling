@@ -15,8 +15,9 @@ resource "aws_cloudwatch_event_rule" "event_rule" {
 resource "aws_cloudwatch_event_target" "event_target" {
   target_id = var.target_id
   rule      = aws_cloudwatch_event_rule.event_rule.name
-  arn       = var.target_role_arn
+  arn       = var.target_arn
   role_arn  = var.target_role_arn != ""? var.target_role_arn: null
+
   //dead_letter_config
   //retry_policy
   //input
