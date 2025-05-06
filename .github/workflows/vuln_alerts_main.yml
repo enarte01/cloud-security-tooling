@@ -11,6 +11,7 @@ on:
       - ".github/workflows/actions/code_scan/code_scan.yml"
       - ".github/workflows/actions/pre_commit/pre_commit.yml"
       - "environments/**"
+      - ".pre-commit-config.yaml"
   workflow_dispatch:
 
 env:
