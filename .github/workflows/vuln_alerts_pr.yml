@@ -19,8 +19,8 @@ env:
   TARGET_DIR: terraform/apps/lambda
   APP_DIR: apps/lambda
   TF_VERSION: 1.6.6
-  TF_BUCKET:
-  TF_DYNAMO_DB:
+  TF_BUCKET: vuln-alert-response-lambda-bjo-state-bucket
+  TF_DYNAMO_DB: vuln-alert-response-lambda-bjo-state-table
   ENV: dev
 permissions:
   id-token: write
