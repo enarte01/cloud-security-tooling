@@ -250,7 +250,7 @@ jobs:
       - name: Package lambda
         id: package_lambda
         run: |
-          IFS=',' read -ra TF_MODULES <<< $(echo "${{  needs.prerequisites.outputs.changed_tf }}" | jq -r '.tf_dir')
+          IFS=',' read -ra TF_MODULES <<< "${{  needs.prerequisites.outputs.changed_tf }}"
           for module in "${TF_MODULES[@]}"; do
             module_directory=${module//-/_}
             if [ ! -d "apps/lambda/${module_directory}" ]; then
