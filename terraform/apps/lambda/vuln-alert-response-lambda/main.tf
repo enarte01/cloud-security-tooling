@@ -19,7 +19,7 @@ module "lambda" {
   compatible_runtimes = local.compatible_runtimes
   create_layer        = true
   create_bucket       = true
-  layer_filename = "${local.extra_tags.app-name}-${PROJECT_NAME}-layer-${local.deployed_tags.env}.zip"
+  layer_filename = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-layer-${local.deployed_tags.env}.zip"
   log_group = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-log-group-${local.deployed_tags.env}"
   s3_object_source = local.s3_object_source
 }
