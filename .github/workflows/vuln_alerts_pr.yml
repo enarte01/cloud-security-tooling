@@ -348,7 +348,7 @@ jobs:
               zip_name="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
               echo "$zip_name in apps/lambda/${module_directory}"
 
-              git fetch --depth=3
+              git fetch --depth=5
               if [[ -f requirements.txt ]]; then 
                 changed=$(git diff --name-only HEAD^ HEAD requirements.txt)
                 if [[ $changed == apps/lambda/${module_directory}/requirements.txt ]]; then
