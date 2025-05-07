@@ -9,7 +9,7 @@ module "lambda" {
   handler             = local.handler
   runtime             = local.runtime
   iam_policy_name     = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-iam-policy-${local.deployed_tags.env}"
-  s3_bucket           = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-s3-bucket-${local.deployed_tags.env}"
+  s3_bucket           = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-bucket-${local.deployed_tags.env}"
   s3_key              = local.s3_key
   assume_role_policy  = local.assume_role_policy
   iam_policy          = local.iam_policy
@@ -19,7 +19,7 @@ module "lambda" {
   compatible_runtimes = local.compatible_runtimes
   create_layer        = true
   create_bucket       = true
-  layer_filename = local.layer_filename
+  layer_filename = "${local.extra_tags.app-name}-${PROJECT_NAME}-layer-${local.deployed_tags.env}.zip"
   log_group = "${local.extra_tags.app-name}-${local.deployed_tags.project-name}-log-group-${local.deployed_tags.env}"
   s3_object_source = local.s3_object_source
 }

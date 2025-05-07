@@ -110,7 +110,6 @@ locals {
   iam_policy         = data.aws_iam_policy_document.lambda_policy.json
   bucket_policy      = data.aws_iam_policy_document.s3_bucket_policy.json
   kms_policy         = data.aws_iam_policy_document.kms_policy.json
-  layer_filename     = "test-layer.zip"
   s3_key             = "${local.extra_tags.app-name}.zip"
   s3_object_source   = "${local.extra_tags.app-name}.zip"
   flexible_time = {
