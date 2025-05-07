@@ -96,7 +96,7 @@ data "aws_iam_policy_document" "kms_policy" {
 }
 locals {
   extra_tags = {
-    "app-name"     = "vuln-alert-response"
+    "app-name"     = "vuln-alert-response-lambda"
     "app-owner"    = "EdmundN"
     "cost-centre"  = "cpd-portfolio"
     "support-team" = "cpd-support"

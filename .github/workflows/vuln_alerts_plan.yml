@@ -25,6 +25,7 @@ env:
   AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
   TF_BUCKET:
   TF_DYNAMO_DB:
+  ENV: dev
 
 permissions:
   id-token: write
@@ -244,7 +245,7 @@ jobs:
       terraform_plan_exitcode: ${{ steps.tf_plan.outputs.terraform_plan_exitcode }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4      
       - name: AWS login
         id: aws_login
         uses: aws-actions/configure-aws-credentials@v4
