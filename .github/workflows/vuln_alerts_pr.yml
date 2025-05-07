@@ -353,7 +353,6 @@ jobs:
 
 
               if [[ -f requirements.txt ]]; then 
-                git fetch --depth=5
                 changed=$(git diff --name-only HEAD^ HEAD requirements.txt)
                 if [[ $changed == apps/lambda/${module_directory}/requirements.txt ]]; then
                 echo "create lambda layer zip file ${LAMBDA_LAYER}"
