@@ -268,7 +268,7 @@ jobs:
               mkdir python
               cp -r lambda_layer/lib python/
               zip -r ${layer_zip} python
-              cp ${layer_zip} ${{env.TARGET_DIR}}/${module}
+              cp ${layer_zip} ${{env.TARGET_DIR}}/${module}/${layer_zip}
             fi
             mkdir dist
             pushd dist
@@ -277,6 +277,7 @@ jobs:
             shopt -u extglob
             ls .
             zip  -r "${{env.TARGET_DIR}}/${module}-zip" *
+            cp "${{env.TARGET_DIR}}/${module}-zip" ${{env.TARGET_DIR}}/${module}/${{env.TARGET_DIR}}/${module}-zip
             popd
             popd
           done
