@@ -258,17 +258,16 @@ jobs:
               echo "Skipping packaging for ${module_directory}"
               continue
             fi  
+            pushd apps/lambda/${module_directory}
             PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
             layer_zip="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
             echo "$layer_zip in apps/lambda/${module_directory}"
-            pushd apps/lambda/${module_directory}
             if [[ -f requirements.txt ]]; then 
-              echo "create lambda layer zip file ${LAMBDA_LAYER}"
+              echo "create lambda layer zip file ${layer_zip}"
               pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
               mkdir python
               cp -r lambda_layer/lib python/
               zip -r ${layer_zip} python
-              cp ${layer_zip} ${{env.TARGET_DIR}}/${module}/${layer_zip}
             fi
             mkdir dist
             pushd dist
@@ -276,10 +275,13 @@ jobs:
             $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip|dist*|lambda_layer*|python*) .")
             shopt -u extglob
             ls .
-            zip  -r "${{env.TARGET_DIR}}/${module}-zip" *
-            cp "${{env.TARGET_DIR}}/${module}-zip" ${{env.TARGET_DIR}}/${module}/${{env.TARGET_DIR}}/${module}-zip
+            zip  -r "${module}.zip" *
             popd
             popd
+            echo "copy layer zip to tf dir"
+            cp apps/lambda/${module_directory}/${layer_zip} ${{env.TARGET_DIR}}/${module}/${layer_zip}
+            echo "copy code zip to tf dir"
+            cp "apps/lambda/${module_directory}/dist/${module}.zip" "${{env.TARGET_DIR}}/${module}/${{env.TARGET_DIR}}/${module}.zip"
           done
       - name: AWS login
         id: aws_login
