@@ -7,6 +7,7 @@ terraform {
     }
   }
   backend "s3" {
+    key = "lambda-state/tf-state"
     
   }
 }
