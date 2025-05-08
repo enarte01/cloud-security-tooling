@@ -5,7 +5,7 @@ on:
     paths:
       - "terraform/apps/**"
       - "apps/lambda/**"
-      - ".github/workflows/vuln_alerts_pr.yml"
+      - ".github/workflows/**"
       - ".github/workflows/actions/tf_run/tf_run.yml"
       - ".github/workflows/actions/code_scan/code_scan.yml"
       - ".github/workflows/actions/pre_commit/pre_commit.yml"
