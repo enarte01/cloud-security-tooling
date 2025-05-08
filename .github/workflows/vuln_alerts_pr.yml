@@ -259,15 +259,16 @@ jobs:
               continue
             fi  
             PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
-            zip_name="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
-            echo "$zip_name in apps/lambda/${module_directory}"
+            layer_zip="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
+            echo "$layer_zip in apps/lambda/${module_directory}"
             pushd apps/lambda/${module_directory}
             if [[ -f requirements.txt ]]; then 
               echo "create lambda layer zip file ${LAMBDA_LAYER}"
               pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
               mkdir python
               cp -r lambda_layer/lib python/
-              zip -r ${zip_name} python
+              zip -r ${layer_zip} python
+              cp ${layer_zip} ${{env.TARGET_DIR}}/${module}
             fi
             mkdir dist
             pushd dist
@@ -275,7 +276,7 @@ jobs:
             $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip|dist*|lambda_layer*|python*) .")
             shopt -u extglob
             ls .
-            zip  -r ${zip_name} *
+            zip  -r "${{env.TARGET_DIR}}/${module}-zip" *
             popd
             popd
           done
@@ -335,8 +336,7 @@ jobs:
   
         - name: Package Lambda and layer
           id: lambda_packaging
-          run: |
-            
+          run: |  
             IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
             for module_directory in "${APP_MODULES[@]}"; do
               if [ ! -d "apps/lambda/${module_directory}" ]; then
@@ -350,7 +350,6 @@ jobs:
               LAMBDA_LAYER=$(echo "$(jq -r '.lambda_layer' app-metadata.json)")
               zip_name="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
               echo "$zip_name in apps/lambda/${module_directory}"
-
 
               if [[ -f requirements.txt ]]; then 
                 changed=$(git diff --name-only HEAD^ HEAD requirements.txt)

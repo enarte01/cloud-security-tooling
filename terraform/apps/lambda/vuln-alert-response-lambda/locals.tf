@@ -65,6 +65,17 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "kms_policy" {
+   statement {
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+    }
+
+    actions = ["*"]
+    resources = ["*"]
+  }
   statement {
     effect = "Allow"
 
@@ -80,6 +91,7 @@ data "aws_iam_policy_document" "kms_policy" {
           "kms:Put*",
           "kms:Update*",
           "kms:Revoke*",
+          "kms:GenerateDataKey",
           "kms:Disable*",
           "kms:Get*",
           "kms:Delete*",
@@ -88,6 +100,7 @@ data "aws_iam_policy_document" "kms_policy" {
           ]
     resources = ["*"]
   }
+  
   statement {
     principals {
       type        = "Service"
