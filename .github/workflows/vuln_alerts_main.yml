@@ -316,7 +316,6 @@ jobs:
     if: ${{ needs.prerequisites.outputs.changed_apps_count > 0 }}
     name: "Lambda prod Packaging"
     runs-on: ubuntu-latest
-    concurrency: vuln-alerts
     env:
       PYTHON_VERSION: 3.12
       ACCOUNT_ID: ${{secrets.ACCOUNT_ID}}
