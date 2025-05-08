@@ -14,21 +14,15 @@ data "aws_iam_policy_document" "lambda_policy" {
   statement {
     effect = "Allow"
 
-    actions = [ 
+    actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
-      //s3
-      //ecr
-      //guardduty
-      //inspector2
-      //config
-      //iam analyser
-      //securityhub
+
     ]
     resources = ["arn:aws:logs:*:*:*"]
   }
-   statement {
+  statement {
 
     actions = [
       "s3:GetObject",
@@ -39,7 +33,7 @@ data "aws_iam_policy_document" "lambda_policy" {
       "${module.lambda.s3_bucket_arn}/*",
     ]
   }
-     statement {
+  statement {
 
     actions = [
       "ecr:*"
@@ -49,6 +43,10 @@ data "aws_iam_policy_document" "lambda_policy" {
 }
 data "aws_iam_policy_document" "s3_bucket_policy" {
   statement {
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
 
     actions = [
       "s3:GetObject",
@@ -67,6 +65,17 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "kms_policy" {
+   statement {
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+
+    actions = ["*"]
+    resources = ["*"]
+  }
   statement {
     effect = "Allow"
 
@@ -75,38 +84,59 @@ data "aws_iam_policy_document" "kms_policy" {
       identifiers = [data.aws_caller_identity.current.arn]
     }
 
-    actions = ["kms:*"]
+    actions = ["kms:Create*",
+          "kms:Describe*",
+          "kms:Enable*",
+          "kms:List*",
+          "kms:Put*",
+          "kms:Update*",
+          "kms:Revoke*",
+          "kms:GenerateDataKey",
+          "kms:Disable*",
+          "kms:Get*",
+          "kms:Delete*",
+          "kms:ScheduleKeyDeletion",
+          "kms:CancelKeyDeletion"
+          ]
+    resources = ["*"]
   }
+  
   statement {
     principals {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
     actions = [
-      "kms:GenerateDataKey",
-      "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt",
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:CreateGrant"
     ]
-      resources = ["*"]
+    resources = ["*"]
   }
 
-  
+
 }
 locals {
   extra_tags = {
-    "app-name" = "vuln-alert-response"
-    "app-owner" = "EdmundN"
-    "cost-centre" = "cpd-portfolio"
-    "support-team" = "cp-support"
-    "org-unit" = "cpd-portfolio"
+    "app-name"     = "vuln-alert-response-lambda"
+    "app-owner"    = "EdmundN"
+    "cost-centre"  = "cpd-portfolio"
+    "support-team" = "cpd-support"
+    "org-unit"     = "cpd-portfolio"
 
   }
-  deployed_tags = merge(var.tags,local.extra_tags)
-  handler = "lambda_handler"
-  runtime = "python3.12"
+  deployed_tags      = merge(var.tags, local.extra_tags)
+  handler            = "lambda_handler"
+  runtime            = "python3.12"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
-  iam_policy = data.aws_iam_policy_document.lambda_policy.json
-  bucket_policy = data.aws_iam_policy_document.s3_bucket_policy.json
-  kms_policy = data.aws_iam_policy_document.kms_policy.json
+  iam_policy         = data.aws_iam_policy_document.lambda_policy.json
+  bucket_policy      = data.aws_iam_policy_document.s3_bucket_policy.json
+  kms_policy         = data.aws_iam_policy_document.kms_policy.json
+  s3_key             = "${local.extra_tags.app-name}.zip"
+  s3_object_source   = "${local.extra_tags.app-name}.zip"
   flexible_time = {
     "mode" = "OFF"
   }
@@ -121,9 +151,9 @@ locals {
       "Inspector2 Scan",
       "ECR Image Scan"
     ]
-    detail = {"scan-status": ["INITIAL_SCAN_COMPLETE","COMPLETE"]}
+    detail = { "scan-status" : ["INITIAL_SCAN_COMPLETE", "COMPLETE"] }
   })
-  compatible_runtimes = ["python3.11","python3.12"]
+  compatible_runtimes = ["python3.11", "python3.12"]
 }
 
 //not used

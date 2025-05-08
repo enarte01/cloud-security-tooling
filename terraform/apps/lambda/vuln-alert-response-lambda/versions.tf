@@ -6,4 +6,8 @@ terraform {
         version = "~> 5.94"
     }
   }
+  backend "s3" {
+    key = "lambda-state/tf-state"
+    
+  }
 }

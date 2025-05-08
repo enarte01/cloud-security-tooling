@@ -11,15 +11,16 @@ on:
       - ".github/workflows/actions/code_scan/code_scan.yml"
       - ".github/workflows/actions/pre_commit/pre_commit.yml"
       - "environments/**"
+      - ".pre-commit-config.yaml"
   workflow_dispatch:
 
 env:
   TARGET_DIR: terraform/apps/lambda
   APP_DIR: apps/lambda
   TF_VERSION: 1.6.6
-  TF_BUCKET:
-  TF_DYNAMO_DB:
-  ENV: prod
+  TF_BUCKET: ${{secrets.TF_BUCKET}}
+  TF_DYNAMO_DB: ${{secrets.TF_DYNAMO_DB}}
+  ENV: dev
 
 permissions:
   id-token: write
@@ -77,7 +78,7 @@ jobs:
             changed_files=()
             for file_changed in $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}"); do
               echo $file_changed
-              file=$(echo "$file_changed" | cut -d '/' -f 3)
+              file=$(echo "$file_changed" | cut -d '/' -f 4)
               echo "${changed_files[@]}" | grep -w "$file" || {
                 changed_files+=($file)
               }
@@ -253,6 +254,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Package lambda
+        id: package_lambda
+        run: |
+          IFS=',' read -ra TF_MODULES <<< "${{  needs.prerequisites.outputs.changed_tf }}"
+          for module in "${TF_MODULES[@]}"; do
+            module_directory=${module//-/_}
+            if [ ! -d "apps/lambda/${module_directory}" ]; then
+              echo "Skipping packaging for ${module_directory}"
+              continue
+            fi  
+            pushd apps/lambda/${module_directory}
+            PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
+            layer_zip="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
+            echo "$layer_zip in apps/lambda/${module_directory}"
+            if [[ -f requirements.txt ]]; then 
+              echo "create lambda layer zip file ${layer_zip}"
+              pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
+              mkdir python
+              cp -r lambda_layer/lib python/
+              zip -r ${layer_zip} python
+            fi
+            mkdir dist
+            pushd dist
+            shopt -s extglob
+            $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip|dist*|lambda_layer*|python*) .")
+            shopt -u extglob
+            ls .
+            zip  -r "${module}.zip" *
+            popd
+            popd
+            echo "copy layer zip to tf dir"
+            cp apps/lambda/${module_directory}/${layer_zip} ${{env.TARGET_DIR}}/${module}/${layer_zip}
+            echo "copy code zip to tf dir"
+            cp "apps/lambda/${module_directory}/dist/${module}.zip" "${{env.TARGET_DIR}}/${module}/${module}.zip"
+          done
       - name: AWS login
         id: aws_login
         uses: aws-actions/configure-aws-credentials@v4
@@ -268,7 +304,7 @@ jobs:
         id: tf_apply
         uses: ./.github/actions/tf_run
         with:
-          terraform_action: 'plan'
+          terraform_action: 'apply'
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
@@ -289,6 +325,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -307,7 +345,7 @@ jobs:
 
       - name: Package Lambda and layer Code
         id: lambda_packaging
-        run: |
+        run: |    
             IFS=',' read -ra APP_MODULES <<< "${{ needs.prerequisites.outputs.changed_apps }}"
             for module_directory in "${APP_MODULES[@]}"; do
               if [ ! -d "apps/lambda/${module_directory}" ]; then
@@ -315,15 +353,13 @@ jobs:
                 continue
               fi  
               pushd apps/lambda/${module_directory}
-
               module=${module_directory//_/-}
               S3_BUCKET=$(echo "$(jq -r '.s3_bucket' app-metadata.json)")
               PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
               LAMBDA_LAYER=$(echo "$(jq -r '.lambda_layer' app-metadata.json)")
-              zip_name="${module}-${PROJECT_NAME}-${{ env.ENV }}.zip" 
+              zip_name="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
               echo "$zip_name in apps/lambda/${module_directory}"
 
-              git fetch --depth=3
               if [[ -f requirements.txt ]]; then 
                 changed=$(git diff --name-only HEAD^ HEAD requirements.txt)
                 if [[ $changed == apps/lambda/${module_directory}/requirements.txt ]]; then
@@ -338,7 +374,7 @@ jobs:
                   --compatible-runtimes python${{ env.PYTHON_VERSION }} \
                   --compatible-architectures x86_64 arm64") | jq -r '.LayerVersionArn')
                 echo "The layer arn of ${module} is ${layerversionarn}"
-                aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module} \
+                aws lambda update-function-configuration --function-name arn:aws:lambda:${{env.REGION}}:${{env.ACCOUNT_ID}}:function:${module}-${PROJECT_NAME}-lambda-${{env.ENV}} \
                     --layers $layerversionarn
                 rm ${zip_name}
                 rm -r python
@@ -357,5 +393,5 @@ jobs:
               aws s3api put-object --bucket ${S3_BUCKET} --key ${zip_name} --body ${zip_name}
               popd
               popd
-            done 
+            done
  

@@ -1,9 +1,11 @@
 module "s3_bucket" {
   count         = var.create_bucket ? 1 : 0
   source        = "../../../common-resources/aws/s3"
-  bucket_name   = "${var.function_name}-bucket"
+  bucket_name   = var.s3_bucket
   bucket_policy = var.bucket_policy
   kms_key_arn   = var.kms_key_arn != "" ? var.kms_key_arn : module.kms_key[0].kms_key_arn
+  s3_key        = var.s3_key
+  s3_object_source = var.s3_object_source
 }
 module "kms_key" {
   count      = var.kms_key_arn == "" ? 1 : 0
@@ -20,7 +22,7 @@ module "execution_role" {
 }
 module "log_group" {
   source            = "../../../common-resources/aws/cw_log"
-  log_group         = "aws/lambda/${var.function_name}"
+  log_group         = var.log_group
   retention_in_days = var.lambda_log_retention
 }
 
@@ -32,7 +34,8 @@ module "layer" {
   source              = "../../../common-resources/aws/lambda_layer"
   layer_name          = var.layer_name
   compatible_runtimes = var.compatible_runtimes
-  filename = "kerrjek.zip"
+  filename = var.layer_filename
+
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -41,7 +44,7 @@ resource "aws_lambda_function" "lambda" {
   image_uri         = var.image_uri != "" || var.filename == "" && var.s3_bucket == "" ? var.image_uri : null
   s3_bucket         = var.s3_bucket != "" || var.filename == "" && var.image_uri == "" ? var.s3_bucket : null
   s3_key            = var.s3_bucket != "" ? var.s3_key : null
-  s3_object_version = var.s3_key != "" && var.s3_object_version != "" ? var.s3_object_version : null
+  s3_object_version = var.s3_key != "" && var.s3_object_version != "Disabled" ? var.s3_object_version : null
   function_name     = var.function_name
   role              = var.iam_for_lambda != "" ? var.iam_for_lambda : module.execution_role[0].iam_role_arn
   handler           = var.handler
@@ -67,6 +70,8 @@ resource "aws_lambda_function" "lambda" {
   //package_type
   tags = var.tags
   depends_on = [
-    module.log_group
+    module.log_group,
+    module.s3_bucket
   ]
+
 }

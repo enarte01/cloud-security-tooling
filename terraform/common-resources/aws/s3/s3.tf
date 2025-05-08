@@ -32,15 +32,16 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sse_encryption" {
   }
 }
 //optional
-resource "aws_s3_bucket_versioning" "versioning_example" {
-    count = var.versioning_status == ""? 0: 1
+resource "aws_s3_bucket_versioning" "bucket_versioning" {
+    count = var.versioning_status == "Disabled" ? 0: 1
     bucket = aws_s3_bucket.s3_bucket.id
     versioning_configuration {
         status = var.versioning_status
     }
 }
 //optional
-resource "aws_s3_bucket_lifecycle_configuration" "example" {
+resource "aws_s3_bucket_lifecycle_configuration" "bucket_lc" {
+  count = var.lifecycle_rule == null? 0: 1
   bucket = aws_s3_bucket.s3_bucket.id
 
   dynamic "rule" {
@@ -54,13 +55,19 @@ resource "aws_s3_bucket_lifecycle_configuration" "example" {
 //optional
 //TODO expression for either or params for acl and access_control_policy
 resource "aws_s3_bucket_acl" "bucket_acl" {
-    count = var.bucket_acl == ""? 0: 1
+    count = var.bucket_acl == "private"? 0: 1
     depends_on = [aws_s3_bucket_public_access_block.bucket_acl]
 
     bucket = aws_s3_bucket.s3_bucket.id
     acl    = var.bucket_acl
 }
-
+//optional
+resource "aws_s3_object" "object" {
+  count = var.s3_key == ""? 0: 1
+  bucket = aws_s3_bucket.s3_bucket.bucket
+  key    = var.s3_key
+  source = var.s3_object_source
+}
 //TODO
 //aws_s3_bucket_cors_confguration
 //aws_s3_bucket_replication_configuration

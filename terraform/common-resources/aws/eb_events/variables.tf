@@ -17,6 +17,9 @@ variable "target_role_arn" {
   type = string
   default = ""
 }
+variable "target_arn" {
+  type = string
+}
 variable "event_rule_state" {
   type = string
   validation {

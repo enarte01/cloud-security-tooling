@@ -1,5 +1,5 @@
 tags = {
-    "env" = "test"
-    "project-name" = "cpd-portfolio"
+    "env" = "dev"
+    "project-name" = "portfolio"
 }
 region = "eu-west-2"
