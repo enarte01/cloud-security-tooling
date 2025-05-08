@@ -25,7 +25,7 @@ env:
   AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
   TF_BUCKET: ${{secrets.TF_BUCKET}}
   TF_DYNAMO_DB: ${{secrets.TF_DYNAMO_DB}}
-  ENV: test
+  ENV: dev
 
 permissions:
   id-token: write
