@@ -257,23 +257,23 @@ jobs:
       - name: Package lambda
         id: package_lambda
         run: |
-          IFS=',' read -ra TF_MODULES <<< $(echo "${{  needs.prerequisites.outputs.changed_tf }}" | jq -r '.tf_dir')
+          IFS=',' read -ra TF_MODULES <<< "${{  needs.prerequisites.outputs.changed_tf }}"
           for module in "${TF_MODULES[@]}"; do
             module_directory=${module//-/_}
             if [ ! -d "apps/lambda/${module_directory}" ]; then
               echo "Skipping packaging for ${module_directory}"
               continue
             fi  
-            PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
-            zip_name="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
-            echo "$zip_name in apps/lambda/${module_directory}"
             pushd apps/lambda/${module_directory}
+            PROJECT_NAME=$(echo "$(jq -r '.project_name' app-metadata.json)")
+            layer_zip="${module}-${PROJECT_NAME}-layer-${{ env.ENV }}.zip" 
+            echo "$layer_zip in apps/lambda/${module_directory}"
             if [[ -f requirements.txt ]]; then 
-              echo "create lambda layer zip file ${LAMBDA_LAYER}"
+              echo "create lambda layer zip file ${layer_zip}"
               pip install -r requirements.txt --platform=manylinux2014_x86_64 --only-binary=:all: --target ./lambda_layer/lib/${{env.PYTHON_VERSION}}/site-packages
               mkdir python
               cp -r lambda_layer/lib python/
-              zip -r ${zip_name} python
+              zip -r ${layer_zip} python
             fi
             mkdir dist
             pushd dist
@@ -281,9 +281,14 @@ jobs:
             $(echo "cp -r ../!(*.md|*.xlsx|*.txt|*.png|__init__.py|*.zip|dist*|lambda_layer*|python*) .")
             shopt -u extglob
             ls .
-            zip  -r ${zip_name} *
+            zip  -r "${module}.zip" *
             popd
             popd
+            echo "copy layer zip to tf dir"
+            cp apps/lambda/${module_directory}/${layer_zip} ${{env.TARGET_DIR}}/${module}/${layer_zip}
+            echo "copy code zip to tf dir"
+            cp "apps/lambda/${module_directory}/dist/${module}.zip" "${{env.TARGET_DIR}}/${module}/${module}.zip"
+          done
       - name: AWS login
         id: aws_login
         uses: aws-actions/configure-aws-credentials@v4
