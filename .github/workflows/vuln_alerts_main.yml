@@ -13,7 +13,8 @@ on:
       - "environments/**"
       - ".pre-commit-config.yaml"
   workflow_dispatch:
-
+concurrency:
+  group: vuln-alerts
 env:
   TARGET_DIR: terraform/apps/lambda
   APP_DIR: apps/lambda
@@ -244,6 +245,7 @@ jobs:
   terraform_apply_prod:
     name: "Terraform Apply prod"
     runs-on: ubuntu-latest
+    concurrency: vuln-alerts
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     if: ${{ needs.terraform_plan_prod.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
@@ -315,6 +317,7 @@ jobs:
     if: ${{ needs.prerequisites.outputs.changed_apps_count > 0 }}
     name: "Lambda prod Packaging"
     runs-on: ubuntu-latest
+    concurrency: vuln-alerts
     env:
       PYTHON_VERSION: 3.12
       ACCOUNT_ID: ${{secrets.ACCOUNT_ID}}
