@@ -8,7 +8,7 @@ on:
     paths:
       - "terraform/apps/lambda/**"
       - "apps/lambda/**"
-      - ".github/workflows/vuln_alerts_plan.yml"
+      - ".github/workflows/**"
       - ".github/workflows/actions/tf_run/tf_run.yml"
       - ".github/workflows/actions/code_scan/code_scan.yml"
       - ".github/workflows/actions/pre_commit/pre_commit.yml"
@@ -16,7 +16,7 @@ on:
       - ".pre-commit-config.yaml"
   workflow_dispatch:
 concurrency:
-  group: vuln-alerts
+  group: vuln-plan
 
 env:
   TARGET_DIR: terraform/apps/lambda

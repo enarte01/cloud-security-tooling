@@ -5,7 +5,7 @@ on:
     paths:
       - "terraform/apps/**"
       - "apps/lambda/**"
-      - ".github/workflows/vuln_alerts_pr.yml"
+      - ".github/workflows/**"
       - ".github/workflows/actions/tf_run/tf_run.yml"
       - ".github/workflows/actions/code_scan/code_scan.yml"
       - ".github/workflows/actions/pre_commit/pre_commit.yml"
@@ -237,6 +237,7 @@ jobs:
   terraform_apply_dev:
     name: "Terraform Apply Dev"
     runs-on: ubuntu-latest
+    concurrency: vuln-alerts
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
@@ -307,6 +308,7 @@ jobs:
       if: ${{ needs.prerequisites.outputs.changed_apps_count > 0 }}
       name: "Lambda Dev Packaging"
       runs-on: ubuntu-latest
+      concurrency: vuln-alerts      
       env:
         PYTHON_VERSION: 3.12
         ACCOUNT_ID: ${{secrets.ACCOUNT_ID}}
