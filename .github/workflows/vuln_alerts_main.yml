@@ -245,7 +245,6 @@ jobs:
   terraform_apply_prod:
     name: "Terraform Apply prod"
     runs-on: ubuntu-latest
-    concurrency: vuln-alerts
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     if: ${{ needs.terraform_plan_prod.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
