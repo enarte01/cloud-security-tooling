@@ -3,4 +3,3 @@ pymsteams
 slack_sdk
 jira
 boto3
-botocore
