@@ -23,8 +23,8 @@ env:
   APP_DIR: apps/lambda
   TF_VERSION: 1.6.6
   AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
-  TF_BUCKET:
-  TF_DYNAMO_DB:
+  TF_BUCKET: vuln-alert-response-lambda-ku2-state-bucket
+  TF_DYNAMO_DB: vuln-alert-response-lambda-ku2-state-table
   ENV: dev
 
 permissions:
