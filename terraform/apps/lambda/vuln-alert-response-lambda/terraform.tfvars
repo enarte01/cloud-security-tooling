@@ -1,5 +1,5 @@
 tags = {
-    "env" = "dev"
+    "env" = "test"
     "project-name" = "portfolio"
 }
 region = "eu-west-2"
