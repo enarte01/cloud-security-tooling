@@ -78,7 +78,7 @@ jobs:
             changed_files=()
             for file_changed in $(echo "${{ steps.changed_tf_files.outputs.tf_changes_files }}"); do
               echo $file_changed
-              file=$(echo "$file_changed" | cut -d '/' -f 3)
+              file=$(echo "$file_changed" | cut -d '/' -f 4)
               echo "${changed_files[@]}" | grep -w "$file" || {
                 changed_files+=($file)
               }
