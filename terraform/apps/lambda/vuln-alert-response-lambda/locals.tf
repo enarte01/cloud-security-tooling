@@ -73,7 +73,19 @@ data "aws_iam_policy_document" "kms_policy" {
       identifiers = [data.aws_caller_identity.current.arn]
     }
 
-    actions = ["kms:*"]
+    actions = ["kms:Create*",
+          "kms:Describe*",
+          "kms:Enable*",
+          "kms:List*",
+          "kms:Put*",
+          "kms:Update*",
+          "kms:Revoke*",
+          "kms:Disable*",
+          "kms:Get*",
+          "kms:Delete*",
+          "kms:ScheduleKeyDeletion",
+          "kms:CancelKeyDeletion"
+          ]
     resources = ["*"]
   }
   statement {
