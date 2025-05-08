@@ -297,7 +297,7 @@ jobs:
         id: tf_apply
         uses: ./.github/actions/tf_run
         with:
-          terraform_action: 'plan'
+          terraform_action: 'apply'
           terraform_version: ${{ env.TF_VERSION }}
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
