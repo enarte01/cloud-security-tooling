@@ -40,7 +40,7 @@ jobs:
           role-duration-seconds: 900
           role-session-name: tfghIACSession
 
-      - name: Terraform Plan
+      - name: Terraform Destroy
         id: tf_destroy
         uses: ./.github/actions/tf_run
         with:
