@@ -281,7 +281,7 @@ jobs:
             echo "copy layer zip to tf dir"
             cp apps/lambda/${module_directory}/${layer_zip} ${{env.TARGET_DIR}}/${module}/${layer_zip}
             echo "copy code zip to tf dir"
-            cp "apps/lambda/${module_directory}/dist/${module}.zip" "${{env.TARGET_DIR}}/${module}/${{env.TARGET_DIR}}/${module}.zip"
+            cp "apps/lambda/${module_directory}/dist/${module}.zip" "${{env.TARGET_DIR}}/${module}/${module}.zip"
           done
       - name: AWS login
         id: aws_login
