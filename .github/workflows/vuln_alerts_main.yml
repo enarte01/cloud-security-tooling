@@ -319,6 +319,7 @@ jobs:
   lambda_packaging_prod:
     if: ${{ needs.prerequisites.outputs.changed_apps_count > 0 }}
     name: "Lambda prod Packaging"
+    environment: prod
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.12
