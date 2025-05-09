@@ -126,7 +126,7 @@ locals {
     "cost-centre"  = "cpd-portfolio"
     "support-team" = "cpd-support"
     "org-unit"     = "cpd-portfolio"
-
+    "env"          = var.env
   }
   deployed_tags      = merge(var.tags, local.extra_tags)
   handler            = "lambda_handler"

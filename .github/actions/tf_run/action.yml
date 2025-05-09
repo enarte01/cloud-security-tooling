@@ -25,6 +25,9 @@ inputs:
   tf_working_dir:
     description: 'The Terraform Directory to run in'
     required: true
+  tf_env:
+    description: 'The environment to run in'
+    required: true
 #  role_session_duration:
 #    description: 'The duration of the assumed role session'
 #    default: '1200'
@@ -75,21 +78,21 @@ runs:
       working-directory: ${{ inputs.tf_working_dir }}
       shell: bash
       if: ${{ inputs.terraform_action == 'plan' }}
-      run: terraform plan -input=false -detailed-exitcode
+      run: terraform plan -input=false -var="env=${{ inputs.tf_env }}" -detailed-exitcode
 
     - name: "Terraform Apply"
       id: apply
       working-directory: ${{ inputs.tf_working_dir }}
       shell: bash
       if: ${{ inputs.terraform_action == 'apply' }}
-      run: terraform apply -input=false -auto-approve
+      run: terraform apply -input=false -var="env=${{ inputs.tf_env }}" -auto-approve
 
     - name: "Terraform Destroy"
       id: destroy
       working-directory: ${{ inputs.tf_working_dir }}
       shell: bash
       if: ${{ inputs.terraform_action == 'destroy' }}
-      run: terraform destroy -input=false -auto-approve
+      run: terraform destroy -input=false -var="env=${{ inputs.tf_env }}" -auto-approve
 
     - name: "Terraform Output"
       id: output

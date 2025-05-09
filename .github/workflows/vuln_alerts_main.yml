@@ -21,7 +21,7 @@ env:
   TF_VERSION: 1.6.6
   TF_BUCKET: ${{secrets.TF_BUCKET}}
   TF_DYNAMO_DB: ${{secrets.TF_DYNAMO_DB}}
-  ENV: dev
+  ENV: prod
 
 permissions:
   id-token: write
@@ -241,6 +241,7 @@ jobs:
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
           tf_working_dir: ${{env.TARGET_DIR}}/${{ matrix.tf_dir }}
+          tf_env: ${{ env.ENV }}
   
   terraform_apply_prod:
     name: "Terraform Apply prod"
@@ -310,6 +311,7 @@ jobs:
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
           tf_working_dir: ${{env.TARGET_DIR}}/${{ matrix.tf_dir}}
+          tf_env: ${{ env.ENV }}
 
 
   lambda_packaging_prod:

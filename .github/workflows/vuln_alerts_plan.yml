@@ -265,4 +265,5 @@ jobs:
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
           tf_working_dir: ${{env.TARGET_DIR}}/${{ matrix.tf_dir }}
+          tf_env: ${{ env.ENV }}
           
