@@ -18,8 +18,8 @@ env:
   TARGET_DIR: terraform/apps/lambda
   APP_DIR: apps/lambda
   TF_VERSION: 1.6.6
-  TF_BUCKET: ${{secrets.TF_BUCKET}}
-  TF_DYNAMO_DB: ${{secrets.TF_DYNAMO_DB}}
+ # TF_BUCKET: ${{secrets.TF_BUCKET}}
+ # TF_DYNAMO_DB: ${{secrets.TF_DYNAMO_DB}}
   ENV: dev
 permissions:
   id-token: write
@@ -203,6 +203,7 @@ jobs:
     if: ${{ needs.prerequisites.outputs.changed_tf_count > 0 }}
     name: "Terraform Plan Dev"
     runs-on: ubuntu-latest
+    environment: dev
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     needs:
@@ -230,14 +231,15 @@ jobs:
         with:
           terraform_action: 'plan'
           terraform_version: ${{ env.TF_VERSION }}
-          tfstate_bucket: ${{ env.TF_BUCKET }}
-          tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
+          tfstate_bucket: ${{ secrets.TF_BUCKET }}
+          tfstate_dynamodb_table: ${{ secrets.TF_DYNAMO_DB }}
           tf_working_dir: ${{env.TARGET_DIR}}/${{ matrix.tf_dir }}
           tf_env: ${{ env.ENV }}
   
   terraform_apply_dev:
     name: "Terraform Apply Dev"
     runs-on: ubuntu-latest
+    environment: dev
     strategy:
       matrix: ${{fromJson(needs.terraform_matrix.outputs.tf_matrix)}}  
     if: ${{ needs.terraform_plan_dev.outputs.terraform_plan_exitcode == 2 && needs.prerequisites.outputs.changed_tf_count > 0 }}
@@ -300,8 +302,8 @@ jobs:
         with:
           terraform_action: 'apply'
           terraform_version: ${{ env.TF_VERSION }}
-          tfstate_bucket: ${{ env.TF_BUCKET }}
-          tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
+          tfstate_bucket: ${{ secrets.TF_BUCKET }}
+          tfstate_dynamodb_table: ${{ secrets.TF_DYNAMO_DB }}
           tf_working_dir: ${{env.TARGET_DIR}}/${{ matrix.tf_dir}}
           tf_env: ${{ env.ENV }}
 
