@@ -8,6 +8,9 @@ on:
         description: 'Target to destroy'
         type: string
       #branch of target
+      tf_env:
+        description: 'The environment to run in'
+        required: true
 env:
   TF_VERSION: 1.6.6
   AWS_GH_ROLE: ${{secrets.AWS_GH_ROLE}}
@@ -49,4 +52,5 @@ jobs:
           tfstate_bucket: ${{ env.TF_BUCKET }}
           tfstate_dynamodb_table: ${{ env.TF_DYNAMO_DB }}
           tf_working_dir: ${{ inputs.target_dir}}
+          tf_env: ${{ inputs.tf_env}}
   
