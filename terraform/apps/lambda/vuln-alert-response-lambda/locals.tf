@@ -128,6 +128,7 @@ locals {
     "org-unit"     = "cpd-portfolio"
     "env"          = var.env
   }
+  test = "test"
   deployed_tags      = merge(var.tags, local.extra_tags)
   handler            = "lambda_handler"
   runtime            = "python3.12"
